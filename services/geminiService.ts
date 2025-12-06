@@ -22,16 +22,24 @@ export const getMarketInsights = async (
     }).join('\n');
 
     const prompt = `
-      Role: Fishing companion for ${harbourName}.
+      Role: Expert Market Analyst for ${harbourName} Fish Market.
+      Current Time: ${new Date().toLocaleString()} (Vary your response based on this specific moment).
+      
       Data:
       ${marketDataStr}
       
-      Brief:
-      1. 🌊 **Pulse**: Biggest mover & why.
-      2. ⚓ **Action**: Buy/Sell/Hold recommendation.
-      3. 🔮 **Outlook**: Short prediction.
+      Task: Provide a unique, non-repetitive market summary for ${harbourName}.
       
-      Keep it under 100 words. Friendly tone. No markdown bolding.
+      Format:
+      1. 🌊 **Pulse**: Identify the single most interesting price movement today.
+      2. ⚓ **Action**: Give one specific piece of advice for a buyer or seller.
+      3. 🔮 **Outlook**: Predict tomorrow's volume based on today's prices.
+      
+      Constraints:
+      - Keep it under 80 words.
+      - Be specific to the data provided.
+      - Do NOT repeat generic phrases.
+      - Use a professional but accessible tone.
     `;
 
     const result = await model.generateContent(prompt);
