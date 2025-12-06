@@ -30,7 +30,7 @@ export const DetailModal: React.FC<Props> = ({ summary, onClose }) => {
           setPredictions(aiPreds);
         } else {
           // Fallback to deterministic
-          const mockPreds = generateFallbackPredictions(summary.todayRate!.price_per_kg);
+          const mockPreds = generateFallbackPredictions(summary.todayRate!.price_per_kg, summary.species.name_en);
           setPredictions(mockPreds);
         }
         setLoadingPred(false);

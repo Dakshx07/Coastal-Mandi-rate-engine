@@ -179,16 +179,35 @@ export const generate_oracle_summary = (summaries: DailyRateSummary[]): OracleSu
  * Generates fallback predictions using a simple random walk with drift.
  * Used when AI service is unavailable.
  */
-export const generateFallbackPredictions = (currentPrice: number): PredictionPoint[] => {
+export const generateFallbackPredictions = (currentPrice: number, speciesName: string = ''): PredictionPoint[] => {
   const predictions: PredictionPoint[] = [];
   let price = currentPrice;
-  // Trend bias: slight upward drift
-  const trend = 0.5;
+
+  // Create a simple hash from species name to seed the trend
+  let hash = 0;
+  for (let i = 0; i < speciesName.length; i++) {
+    hash = speciesName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  // Determine trend based on hash (some go up, some go down, some volatile)
+  const trendType = Math.abs(hash) % 3; // 0: Up, 1: Down, 2: Volatile
+  const volatility = (Math.abs(hash) % 10) / 100 + 0.02; // 0.02 to 0.12
 
   for (let i = 1; i <= 7; i++) {
-    // Random fluctuation between -5% and +5%
-    const changePercent = (Math.random() * 0.1) - 0.04;
-    const change = price * changePercent + trend;
+    let changePercent = 0;
+
+    if (trendType === 0) {
+      // Upward trend
+      changePercent = (Math.random() * volatility);
+    } else if (trendType === 1) {
+      // Downward trend
+      changePercent = -(Math.random() * volatility);
+    } else {
+      // Volatile
+      changePercent = (Math.random() - 0.5) * (volatility * 2);
+    }
+
+    const change = price * changePercent;
     price += change;
 
     predictions.push({
