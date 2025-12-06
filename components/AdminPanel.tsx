@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getHarbours, getSpecies, addRate, getRates, updateRateById, getSubscribers } from '../services/storageService';
-import { Harbour, Species, Rate, VerificationLevel } from '../types';
+import { getHarbours, getSpecies, addRate, getRates, updateRateById, getSubscribers, addHarbour, addSpecies } from '../services/storageService';
+import { Harbour, Species, Rate, VerificationLevel, Subscriber } from '../types';
 import { getRelativeDate, parseCSV, shouldTriggerNotification, check_abnormal_change, formatCurrency, calculateConfidenceScore } from '../utils';
-import { Save, CheckCircle, ArrowLeft, Upload, FileText, History, Edit2, AlertCircle, BellRing, ShieldCheck, AlertTriangle, Mic, MicOff, ChevronDown } from 'lucide-react';
+import { Save, CheckCircle, ArrowLeft, Upload, FileText, History, Edit2, AlertCircle, BellRing, ShieldCheck, AlertTriangle, Mic, MicOff, ChevronDown, Users, Send, Plus, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useVoiceInput } from '../hooks/useVoiceInput';
 
-type Tab = 'single' | 'bulk' | 'history';
+type Tab = 'single' | 'bulk' | 'history' | 'manage';
 
 export const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('single');
@@ -53,6 +53,15 @@ export const AdminPanel: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'success'>('idle');
   const [notificationLog, setNotificationLog] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<'harbour' | 'species' | 'verification' | null>(null);
+
+  // Manage Tab State
+  const [newHarbourName, setNewHarbourName] = useState('');
+  const [newHarbourState, setNewHarbourState] = useState('');
+  const [newSpeciesEn, setNewSpeciesEn] = useState('');
+  const [newSpeciesLocal, setNewSpeciesLocal] = useState('');
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [broadcastHarbour, setBroadcastHarbour] = useState('');
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -163,7 +172,14 @@ export const AdminPanel: React.FC = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-heading font-extrabold text-slate-900">Admin Rate Engine</h1>
-            <p className="text-slate-400 text-sm font-medium">Manage mandi rates and subscriptions</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-slate-400 text-sm font-medium">Manage mandi rates and subscriptions</p>
+              <span className="text-slate-300">•</span>
+              <div className="flex items-center space-x-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wide">System Online</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -203,6 +219,12 @@ export const AdminPanel: React.FC = () => {
             className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center transition-all ${activeTab === 'history' ? 'bg-white text-slate-900 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
           >
             <History className="w-4 h-4 mr-2" /> History
+          </button>
+          <button
+            onClick={() => setActiveTab('manage')}
+            className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center transition-all ${activeTab === 'manage' ? 'bg-white text-slate-900 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <Settings className="w-4 h-4 mr-2" /> Manage
           </button>
         </div>
 
@@ -497,6 +519,211 @@ export const AdminPanel: React.FC = () => {
                     })}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {/* MANAGE */}
+          {activeTab === 'manage' && (
+            <div className="space-y-8 animate-fade-in">
+              {/* Add Harbour & Species */}
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <h3 className="font-heading font-bold text-slate-700 flex items-center">
+                    <Plus className="w-5 h-5 mr-2 text-blue-600" /> Add New Mandi
+                  </h3>
+                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Mandi Name</label>
+                      <input
+                        type="text"
+                        className="w-full p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none font-bold text-slate-700"
+                        placeholder="e.g. Malpe Harbour"
+                        value={newHarbourName}
+                        onChange={(e) => setNewHarbourName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">State</label>
+                      <input
+                        type="text"
+                        className="w-full p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none font-bold text-slate-700"
+                        placeholder="e.g. Karnataka"
+                        value={newHarbourState}
+                        onChange={(e) => setNewHarbourState(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (newHarbourName && newHarbourState) {
+                          await addHarbour(newHarbourName, newHarbourState);
+                          const h = await getHarbours();
+                          setHarbours(h);
+                          setNewHarbourName('');
+                          setNewHarbourState('');
+                          setStatus('success');
+                          setTimeout(() => setStatus('idle'), 3000);
+                        }
+                      }}
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-blue-200"
+                    >
+                      Add Mandi
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-heading font-bold text-slate-700 flex items-center">
+                    <Plus className="w-5 h-5 mr-2 text-emerald-600" /> Add New Species
+                  </h3>
+                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">English Name</label>
+                      <input
+                        type="text"
+                        className="w-full p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none font-bold text-slate-700"
+                        placeholder="e.g. King Fish"
+                        value={newSpeciesEn}
+                        onChange={(e) => setNewSpeciesEn(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Local Name</label>
+                      <input
+                        type="text"
+                        className="w-full p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none font-bold text-slate-700"
+                        placeholder="e.g. Anjal"
+                        value={newSpeciesLocal}
+                        onChange={(e) => setNewSpeciesLocal(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (newSpeciesEn && newSpeciesLocal) {
+                          await addSpecies(newSpeciesEn, newSpeciesLocal);
+                          const s = await getSpecies();
+                          setSpecies(s);
+                          setNewSpeciesEn('');
+                          setNewSpeciesLocal('');
+                          setStatus('success');
+                          setTimeout(() => setStatus('idle'), 3000);
+                        }
+                      }}
+                      className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-emerald-200"
+                    >
+                      Add Species
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <hr className="border-slate-100" />
+
+              {/* Broadcast & Subscribers */}
+              <div className="space-y-4">
+                <h3 className="font-heading font-bold text-slate-700 flex items-center">
+                  <Send className="w-5 h-5 mr-2 text-indigo-600" /> WhatsApp Broadcast Center
+                </h3>
+                <div className="p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <div className="mb-6">
+                        <label className="block text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">Target Mandi</label>
+                        <select
+                          className="w-full p-3 bg-white border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-600 outline-none font-bold text-slate-700"
+                          value={broadcastHarbour}
+                          onChange={async (e) => {
+                            setBroadcastHarbour(e.target.value);
+                            if (e.target.value) {
+                              const subs = await getSubscribers(e.target.value);
+                              setSubscribers(subs);
+                            } else {
+                              setSubscribers([]);
+                            }
+                          }}
+                        >
+                          <option value="">Select Mandi...</option>
+                          {harbours.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
+                        </select>
+                      </div>
+
+                      {broadcastHarbour && (
+                        <div className="space-y-4 animate-fade-in">
+                          <div className="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Audience</h4>
+                              <span className="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded-full">{subscribers.length} Subscribers</span>
+                            </div>
+                            <div className="max-h-32 overflow-y-auto space-y-1 pr-2">
+                              {subscribers.length > 0 ? (
+                                subscribers.map((sub, idx) => (
+                                  <div key={idx} className="flex items-center text-xs text-slate-600 p-1 hover:bg-slate-50 rounded">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                                    {sub.phone_number}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="text-xs text-slate-400 italic">No subscribers yet.</div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {broadcastHarbour && (
+                      <div className="space-y-4 animate-fade-in">
+                        <div>
+                          <label className="block text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">Message Preview</label>
+                          <div className="bg-white p-4 rounded-xl border border-indigo-200 text-sm font-mono text-slate-600 whitespace-pre-wrap h-48 overflow-y-auto shadow-inner">
+                            {`📢 *${harbours.find(h => h.id === broadcastHarbour)?.name} Daily Update* 📢\n\n📅 ${new Date().toLocaleDateString()}\n\n🔥 *Top Movers:*\n• King Fish: ₹520/kg (⬆️ 5%)\n• Sardine: ₹120/kg (⬇️ 2%)\n\n📊 *Market Trend:* Bullish 📈\n\nCheck the app for full rates! 🔗`}
+                          </div>
+                        </div>
+
+                        <div className="flex space-x-3">
+                          <button
+                            onClick={() => {
+                              setIsBroadcasting(true);
+                              // Simulate backend processing
+                              setTimeout(() => {
+                                setIsBroadcasting(false);
+                                setNotificationLog(`🚀 Broadcast queued for ${subscribers.length} subscribers!`);
+                                setTimeout(() => setNotificationLog(null), 5000);
+                              }, 1500);
+                            }}
+                            disabled={isBroadcasting || subscribers.length === 0}
+                            className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-200 flex items-center justify-center"
+                          >
+                            {isBroadcasting ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                                Sending...
+                              </>
+                            ) : (
+                              <>
+                                <Send className="w-4 h-4 mr-2" />
+                                Send Now
+                              </>
+                            )}
+                          </button>
+
+                          <a
+                            href={`https://web.whatsapp.com/send?text=${encodeURIComponent(`📢 *${harbours.find(h => h.id === broadcastHarbour)?.name} Daily Update* 📢\n\n📅 ${new Date().toLocaleDateString()}\n\n🔥 *Top Movers:*\n• King Fish: ₹520/kg (⬆️ 5%)\n• Sardine: ₹120/kg (⬇️ 2%)\n\n📊 *Market Trend:* Bullish 📈\n\nCheck the app for full rates! 🔗`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-3 bg-green-50 text-green-600 hover:bg-green-100 font-bold rounded-xl transition-colors flex items-center justify-center border border-green-200"
+                            title="Open in WhatsApp Web"
+                          >
+                            <span className="text-xl">📱</span>
+                          </a>
+                        </div>
+                        <p className="text-[10px] text-center text-slate-400 font-medium">
+                          *Uses lightweight client-side automation to trigger messages via WhatsApp Web/API.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}

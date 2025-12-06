@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -13,6 +14,7 @@ import {
 
 export const SettingsPage: React.FC = () => {
   const { user, logout } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
   const [dataSaver, setDataSaver] = useState(false);
@@ -98,11 +100,8 @@ export const SettingsPage: React.FC = () => {
               </div>
               <select
                 className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-bold"
-                onChange={(e) => {
-                  // In a real app, this would use setLanguage from context
-                  // For now, we just show the UI change
-                  console.log("Language changed to", e.target.value);
-                }}
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as any)}
               >
                 <option value="en">English</option>
                 <option value="hi">Hindi</option>

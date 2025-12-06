@@ -14,6 +14,20 @@ export const getHarbours = async (): Promise<Harbour[]> => {
   return data || [];
 };
 
+export const addHarbour = async (name: string, state: string): Promise<Harbour | null> => {
+  const { data, error } = await supabase
+    .from('harbours')
+    .insert({ name, state, last_updated_timestamp: Date.now() })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding harbour:', error);
+    return null;
+  }
+  return data;
+};
+
 // --- Species ---
 export const getSpecies = async (): Promise<Species[]> => {
   const { data, error } = await supabase
@@ -25,6 +39,20 @@ export const getSpecies = async (): Promise<Species[]> => {
     return [];
   }
   return data || [];
+};
+
+export const addSpecies = async (name_en: string, name_local: string): Promise<Species | null> => {
+  const { data, error } = await supabase
+    .from('species')
+    .insert({ name_en, name_local, image_url: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&q=80&w=200' }) // Default placeholder
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding species:', error);
+    return null;
+  }
+  return data;
 };
 
 // --- Rates ---

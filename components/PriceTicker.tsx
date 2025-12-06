@@ -1,5 +1,6 @@
 import React from 'react';
 import { DailyRateSummary } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export const PriceTicker: React.FC<Props> = ({ summaries }) => {
+    const { language } = useLanguage();
     if (summaries.length === 0) return null;
 
     return (
@@ -16,10 +18,11 @@ export const PriceTicker: React.FC<Props> = ({ summaries }) => {
                 {[...summaries, ...summaries, ...summaries, ...summaries, ...summaries].map((summary, index) => {
                     const changeValue = summary.change.percentDiff || 0;
                     const isValidChange = !isNaN(changeValue) && changeValue !== 0;
+                    const displayName = language === 'en' ? summary.species.name_en : summary.species.name_local;
 
                     return (
                         <div key={`${summary.species.id}-${index}`} className="flex items-center mx-6 text-sm font-medium">
-                            <span className="text-slate-400 mr-2">{summary.species.name_en}:</span>
+                            <span className="text-slate-400 mr-2">{displayName}:</span>
                             <span className="font-bold mr-2 text-white">₹{summary.todayRate?.price_per_kg || 'N/A'}</span>
                             {isValidChange && (
                                 <span className={`flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${summary.change.status === 'UP' ? 'bg-emerald-500/20 text-emerald-400' :
