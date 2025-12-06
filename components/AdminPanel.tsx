@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getHarbours, getSpecies, addRate, getRates, updateRateById, getSubscribers, addHarbour, addSpecies } from '../services/storageService';
+import { getHarbours, getSpecies, addRate, getRates, updateRateById, getSubscribers, addHarbour, addSpecies, populateDemoData } from '../services/storageService';
 import { Harbour, Species, Rate, VerificationLevel, Subscriber } from '../types';
 import { getRelativeDate, parseCSV, shouldTriggerNotification, check_abnormal_change, formatCurrency, calculateConfidenceScore } from '../utils';
 import { Save, CheckCircle, ArrowLeft, Upload, FileText, History, Edit2, AlertCircle, BellRing, ShieldCheck, AlertTriangle, Mic, MicOff, ChevronDown, Users, Send, Plus, Settings } from 'lucide-react';
@@ -614,6 +614,41 @@ export const AdminPanel: React.FC = () => {
                       Add Species
                     </button>
                   </div>
+                </div>
+              </div>
+
+              <hr className="border-slate-100" />
+
+              {/* Demo Data */}
+              <div className="space-y-4">
+                <h3 className="font-heading font-bold text-slate-700 flex items-center">
+                  <Upload className="w-5 h-5 mr-2 text-purple-600" /> Demo Data
+                </h3>
+                <div className="p-6 bg-purple-50 rounded-2xl border border-purple-100 flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-slate-800">Populate Rich Demo Data</h4>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Injects 10+ major Indian harbours and 15+ species with realistic rates for testing.
+                    </p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await populateDemoData();
+                      const h = await getHarbours();
+                      const s = await getSpecies();
+                      setHarbours(h);
+                      setSpecies(s);
+                      setStatus('success');
+                      setNotificationLog("Demo data populated successfully!");
+                      setTimeout(() => {
+                        setStatus('idle');
+                        setNotificationLog(null);
+                      }, 3000);
+                    }}
+                    className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-purple-200"
+                  >
+                    Inject Data
+                  </button>
                 </div>
               </div>
 
