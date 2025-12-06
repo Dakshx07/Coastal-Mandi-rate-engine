@@ -1,8 +1,6 @@
-
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { DailyRateSummary, Rate, PredictionPoint } from "../types";
 
-// Determine if we are in a browser environment with the API key available
 // Determine if we are in a browser environment with the API key available
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -15,7 +13,8 @@ export const getMarketInsights = async (
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const marketDataStr = summaries.map(s => {
       const priceStr = s.todayRate ? `₹${s.todayRate.price_per_kg}` : 'N/A';
@@ -35,12 +34,9 @@ export const getMarketInsights = async (
       Keep it under 100 words. Friendly tone. No markdown bolding.
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-
-    return response.text || "Could not generate insights.";
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text() || "Could not generate insights.";
   } catch (error) {
     console.error("Gemini API Error:", error);
     return "Market analysis temporarily unavailable.";
@@ -56,7 +52,9 @@ export const predictPriceTrend = async (
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
     const sortedHistory = [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const historyStr = sortedHistory.map(h => `${h.date}: ₹${h.price_per_kg}`).join('\n');
 
@@ -70,12 +68,10 @@ export const predictPriceTrend = async (
       Format: [{"date": "YYYY-MM-DD", "price": 123}, ...]
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    const text = response.text;
     if (!text) return null;
 
     // Sanitize and parse JSON
@@ -88,3 +84,5 @@ export const predictPriceTrend = async (
     return null;
   }
 };
+
+

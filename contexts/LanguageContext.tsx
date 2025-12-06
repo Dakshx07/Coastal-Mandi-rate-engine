@@ -140,6 +140,66 @@ const translations: Translations = {
         hi: 'लॉग इन',
         ml: 'ലോഗിൻ',
         kn: 'ಲಾಗಿನ್'
+    },
+    'search.placeholder': {
+        en: 'Search species (e.g. Sardine, Mathi)...',
+        hi: 'प्रजातियां खोजें (जैसे सार्डिन, मथी)...',
+        ml: 'മീനുകൾ തിരയുക (ഉദാ. മത്തി)...',
+        kn: 'ಮೀನುಗಳನ್ನು ಹುಡುಕಿ (ಉದಾ. ಬೂತಾಯಿ)...'
+    },
+    'detail.current_rate': {
+        en: 'Current Market Rate',
+        hi: 'वर्तमान बाजार भाव',
+        ml: 'നിലവിലെ വിപണി നിരക്ക്',
+        kn: 'ಪ್ರಸ್ತುತ ಮಾರುಕಟ್ಟೆ ದರ'
+    },
+    'detail.share_whatsapp': {
+        en: 'Share Deal on WhatsApp',
+        hi: 'व्हाट्सएप पर शेयर करें',
+        ml: 'വാട്ട്‌സ്ആപ്പിൽ പങ്കിടുക',
+        kn: 'ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ'
+    },
+    'ai.generating_forecast': {
+        en: 'Generating AI Forecast',
+        hi: 'AI पूर्वानुमान बना रहा है',
+        ml: 'AI പ്രവചനം തയ്യാറാക്കുന്നു',
+        kn: 'AI ಮುನ್ಸೂಚನೆ ರಚಿಸಲಾಗುತ್ತಿದೆ'
+    },
+    'ai.analyzing': {
+        en: 'Analyzing historical trends & market signals...',
+        hi: 'ऐतिहासिक रुझानों का विश्लेषण...',
+        ml: 'വിപണി പ്രവണതകൾ വിശകലനം ചെയ്യുന്നു...',
+        kn: 'ಮಾರುಕಟ್ಟೆ ಪ್ರವೃತ್ತಿಗಳನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...'
+    },
+    'ai.forecast_title': {
+        en: 'AI Market Forecast',
+        hi: 'AI बाजार पूर्वानुमान',
+        ml: 'AI വിപണി പ്രവചനം',
+        kn: 'AI ಮಾರುಕಟ್ಟೆ ಮುನ್ಸೂಚನೆ'
+    },
+    'stats.trend': {
+        en: 'Trend',
+        hi: 'रुझान',
+        ml: 'പ്രവണത',
+        kn: 'ಪ್ರವೃತ್ತಿ'
+    },
+    'stats.target_price': {
+        en: 'Target Price',
+        hi: 'लक्ष्य मूल्य',
+        ml: 'ലക്ഷ്യ വില',
+        kn: 'ಗುರಿ ಬೆಲೆ'
+    },
+    'stats.bullish': {
+        en: 'Bullish',
+        hi: 'तेजी',
+        ml: 'മുന്നേറ്റം',
+        kn: 'ಏರಿಕೆ'
+    },
+    'stats.bearish': {
+        en: 'Bearish',
+        hi: 'मंदी',
+        ml: 'ഇടിവ്',
+        kn: 'ಇಳಿಕೆ'
     }
 };
 

@@ -14,7 +14,8 @@ import { DetailModal } from './DetailModal';
 import { WhatsAppModal } from './WhatsAppModal';
 import { QuickCompare } from './QuickCompare';
 import { CatchCalculator } from './CatchCalculator';
-import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X } from 'lucide-react';
+import { PriceTicker } from './PriceTicker';
+import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera } from 'lucide-react';
 
 type Tab = 'rates' | 'compare' | 'insights';
 
@@ -35,6 +36,7 @@ export const UserView: React.FC = () => {
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isGraderOpen, setIsGraderOpen] = useState(false);
 
   // AI Insight State
   const [aiInsight, setAiInsight] = useState<string | null>(null);
@@ -110,7 +112,10 @@ export const UserView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-28 relative bg-slate-50 font-nunito overflow-x-hidden">
+    <div className="min-h-screen pb-24 relative bg-slate-50 font-nunito overflow-x-hidden">
+      {/* Live Ticker */}
+      <PriceTicker summaries={summaries} />
+
       {/* Top Navbar - Relative (Scrolls Away) to maximize data view */}
       <div className="glass px-5 py-4 flex justify-between items-center relative z-30 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
         <div className="text-sm font-extrabold text-slate-800 tracking-tight font-heading flex items-center">
@@ -186,7 +191,7 @@ export const UserView: React.FC = () => {
               <input
                 type="text"
                 className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-sm"
-                placeholder="Search species (e.g. Sardine, Mathi)..."
+                placeholder={t('search.placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
