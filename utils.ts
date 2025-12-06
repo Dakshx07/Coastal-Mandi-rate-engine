@@ -198,3 +198,43 @@ export const generateFallbackPredictions = (currentPrice: number): PredictionPoi
   }
   return predictions;
 };
+
+/**
+ * Generates a dynamic, algorithm-based forecast message for a specific species.
+ * Replaces hardcoded text with "real" analysis based on prediction data.
+ */
+export const generateSpeciesForecast = (
+  speciesName: string,
+  currentPrice: number,
+  predictions: PredictionPoint[]
+): string => {
+  if (!predictions || predictions.length === 0) {
+    return "Insufficient data for a reliable forecast.";
+  }
+
+  const nextDayPrice = predictions[0].price;
+  const weekPrice = predictions[6].price; // 7th day
+
+  const shortTermDiff = nextDayPrice - currentPrice;
+  const longTermDiff = weekPrice - currentPrice;
+
+  const shortTermPercent = (shortTermDiff / currentPrice) * 100;
+  const longTermPercent = (longTermDiff / currentPrice) * 100;
+
+  // Logic for the message
+  if (longTermPercent > 15) {
+    return `Strong bullish trend detected for ${speciesName}. Prices are expected to surge by ~${Math.round(longTermPercent)}% over the week. Recommendation: Hold stock for better margins.`;
+  } else if (longTermPercent < -15) {
+    return `Bearish outlook for ${speciesName}. Prices might drop by ~${Math.abs(Math.round(longTermPercent))}% this week. Recommendation: Sell now to avoid further depreciation.`;
+  } else if (shortTermPercent > 5) {
+    return `Short-term spike expected. Prices may rise tomorrow. Good opportunity for quick sales before stabilization.`;
+  } else if (shortTermPercent < -5) {
+    return `Minor dip expected tomorrow. Buyers might find better deals if they wait 24 hours.`;
+  } else if (longTermPercent > 5) {
+    return `Steady upward growth. Expect consistent but small gains throughout the week.`;
+  } else if (longTermPercent < -5) {
+    return `Slow decline predicted. Consider clearing stock sooner rather than later.`;
+  } else {
+    return `Market is stable. ${speciesName} prices are expected to remain within a narrow range. Safe to trade as usual with low volatility.`;
+  }
+};

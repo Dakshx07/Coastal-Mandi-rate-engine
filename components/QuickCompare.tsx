@@ -47,10 +47,10 @@ export const QuickCompare: React.FC<Props> = ({ harbours, defaultOpen = false })
   if (harbours.length < 2) return null;
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-100 overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div className="bg-white rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-100 transition-all duration-300 hover:shadow-xl relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-5 bg-white hover:bg-slate-50/50 transition-colors"
+        className={`w-full flex items-center justify-between p-5 bg-white hover:bg-slate-50/50 transition-colors rounded-t-3xl ${!isOpen ? 'rounded-b-3xl' : ''}`}
       >
         <div className="flex items-center space-x-4">
           <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { DailyRateSummary, PredictionPoint } from '../types';
 import { X, Calendar, TrendingUp, Sparkles, Activity, ArrowUpRight } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
-import { formatCurrency, generateFallbackPredictions } from '../utils';
+import { formatCurrency, generateFallbackPredictions, generateSpeciesForecast } from '../utils';
+
+
 import { predictPriceTrend } from '../services/geminiService';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -199,9 +201,9 @@ export const DetailModal: React.FC<Props> = ({ summary, onClose }) => {
                   <div>
                     <h4 className="font-heading font-bold text-slate-800 text-sm mb-1">{t('ai.forecast_title')}</h4>
                     <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                      {predictions.length > 0 && predictions[6].price > (summary.todayRate?.price_per_kg || 0)
-                        ? "Strong upward momentum detected. Recommendation: Hold stock for better margins later this week."
-                        : "Price correction expected in coming days. Recommendation: Buyers should wait for the dip."
+                      {predictions.length > 0
+                        ? generateSpeciesForecast(summary.species.name_en, summary.todayRate?.price_per_kg || 0, predictions)
+                        : "Analysis unavailable."
                       }
                     </p>
                   </div>

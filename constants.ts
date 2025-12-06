@@ -8,6 +8,10 @@ export const HARBOURS: Harbour[] = [
   { id: 'h3', name: 'Mangalore Old Port', state: 'Karnataka', last_updated_timestamp: Date.now() },
   { id: 'h4', name: 'Sassoon Dock', state: 'Maharashtra', last_updated_timestamp: Date.now() },
   { id: 'h5', name: 'Chennai Kasimedu', state: 'Tamil Nadu', last_updated_timestamp: Date.now() },
+  { id: 'h6', name: 'Veraval Harbour', state: 'Gujarat', last_updated_timestamp: Date.now() },
+  { id: 'h7', name: 'Paradip Fishing Harbour', state: 'Odisha', last_updated_timestamp: Date.now() },
+  { id: 'h8', name: 'Malpe Harbour', state: 'Karnataka', last_updated_timestamp: Date.now() },
+  { id: 'h9', name: 'Munambam Harbour', state: 'Kerala', last_updated_timestamp: Date.now() },
 ];
 
 export const SPECIES: Species[] = [
@@ -21,6 +25,11 @@ export const SPECIES: Species[] = [
   { id: 's8', name_en: 'Crab', name_local: 'Njandu / Kekda', image_url: 'https://loremflickr.com/320/240/crab,seafood' },
   { id: 's9', name_en: 'Anchovy', name_local: 'Netholi / Kati', image_url: 'https://loremflickr.com/320/240/anchovy,fish' },
   { id: 's10', name_en: 'Red Snapper', name_local: 'Chemballi / Rane', image_url: 'https://loremflickr.com/320/240/redsnapper,fish' },
+  { id: 's11', name_en: 'Tiger Prawns', name_local: 'Puli Chemmeen', image_url: 'https://loremflickr.com/320/240/tigerprawn,seafood' },
+  { id: 's12', name_en: 'Pearl Spot', name_local: 'Karimeen', image_url: 'https://loremflickr.com/320/240/pearlspot,fish' },
+  { id: 's13', name_en: 'Indian Salmon', name_local: 'Rawas', image_url: 'https://loremflickr.com/320/240/salmon,fish' },
+  { id: 's14', name_en: 'Barracuda', name_local: 'Sheela', image_url: 'https://loremflickr.com/320/240/barracuda,fish' },
+  { id: 's15', name_en: 'Lobster', name_local: 'Konju', image_url: 'https://loremflickr.com/320/240/lobster,seafood' },
 ];
 
 const generatePrices = (basePrice: number): number[] => {
