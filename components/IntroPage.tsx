@@ -56,23 +56,23 @@ export const IntroPage: React.FC = () => {
       {/* --- Main Content --- */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 text-center">
 
-        {/* Logo Mark */}
+        {/* Logo Mark - The Hook */}
         <div className={`transition-all duration-1000 transform ${stage >= 1 ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-90'}`}>
-          <div className="relative w-28 h-28 mx-auto mb-8">
-            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-3xl blur-xl opacity-40 animate-pulse"></div>
-            <div className="relative w-full h-full bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl flex items-center justify-center shadow-2xl animate-float">
-              <img src="/logo.svg" alt="Logo" className="w-16 h-16 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+          <div className="relative w-28 h-28 mx-auto mb-8 group">
+            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-3xl blur-xl opacity-40 animate-pulse group-hover:opacity-60 transition-opacity"></div>
+            <div className="relative w-full h-full bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl flex items-center justify-center shadow-2xl animate-float group-hover:scale-105 transition-transform duration-500">
+              <Anchor className="w-14 h-14 text-cyan-400 drop-shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
             </div>
           </div>
         </div>
 
         {/* Text Content */}
         <div className={`transition-all duration-1000 delay-200 transform ${stage >= 2 ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-300 text-[11px] font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-300 text-[11px] font-bold tracking-widest uppercase mb-6 backdrop-blur-sm shadow-[0_0_10px_rgba(6,182,212,0.2)]">
             <Globe className="w-3 h-3 mr-2" /> Coastal Intelligence Network
           </div>
 
-          <h1 className="text-5xl sm:text-7xl font-heading font-black text-white leading-tight mb-6 tracking-tight">
+          <h1 className="text-5xl sm:text-7xl font-heading font-black text-white leading-tight mb-6 tracking-tight drop-shadow-lg">
             {t('hero.title')}
           </h1>
 
@@ -83,11 +83,11 @@ export const IntroPage: React.FC = () => {
 
         {/* Feature Pills */}
         <div className={`flex flex-wrap justify-center gap-4 mb-12 transition-all duration-1000 delay-500 ${stage >= 2 ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="flex items-center px-4 py-2 bg-white/5 border border-white/5 rounded-full backdrop-blur-sm">
+          <div className="flex items-center px-4 py-2 bg-white/5 border border-white/5 rounded-full backdrop-blur-sm hover:bg-white/10 transition-colors">
             <Activity className="w-4 h-4 text-emerald-400 mr-2" />
             <span className="text-sm font-bold text-slate-300">Live Trends</span>
           </div>
-          <div className="flex items-center px-4 py-2 bg-white/5 border border-white/5 rounded-full backdrop-blur-sm">
+          <div className="flex items-center px-4 py-2 bg-white/5 border border-white/5 rounded-full backdrop-blur-sm hover:bg-white/10 transition-colors">
             <ShieldCheck className="w-4 h-4 text-blue-400 mr-2" />
             <span className="text-sm font-bold text-slate-300">Verified Data</span>
           </div>

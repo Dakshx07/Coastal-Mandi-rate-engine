@@ -45,8 +45,8 @@ export const LoginPage: React.FC = () => {
         <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-10 animate-fade-in">
 
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl mb-6 shadow-lg shadow-blue-600/30 transform rotate-3">
-              <Anchor className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl mb-6 shadow-lg shadow-blue-500/30 transform rotate-3 group">
+              <Anchor className="w-8 h-8 text-white group-hover:scale-110 transition-transform" />
             </div>
             <h1 className="text-3xl font-heading font-extrabold text-slate-900 tracking-tight">Welcome Back</h1>
             <p className="text-slate-500 font-medium mt-3">Sign in to access real-time mandi rates.</p>
@@ -78,7 +78,7 @@ export const LoginPage: React.FC = () => {
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 text-red-600 text-xs font-bold rounded-lg text-center border border-red-100">
+              <div className="p-3 bg-red-50 text-red-600 text-xs font-bold rounded-lg text-center border border-red-100 animate-shake">
                 {error}
               </div>
             )}

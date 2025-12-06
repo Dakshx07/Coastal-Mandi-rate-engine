@@ -14,6 +14,8 @@ export const QuickCompare: React.FC<Props> = ({ harbours, defaultOpen = false })
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [h1, setH1] = useState(harbours[0]?.id || '');
   const [h2, setH2] = useState(harbours[1]?.id || '');
+  const [isOpenH1, setIsOpenH1] = useState(false);
+  const [isOpenH2, setIsOpenH2] = useState(false);
   const [comparisonData, setComparisonData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -67,27 +69,57 @@ export const QuickCompare: React.FC<Props> = ({ harbours, defaultOpen = false })
       {isOpen && (
         <div className="p-5 pt-0 animate-slide-up-spring">
           {/* Selectors */}
-          <div className="flex items-center space-x-3 mb-6 p-1 bg-slate-100 rounded-2xl">
-            <div className="flex-1 relative">
-              <select
-                value={h1}
-                onChange={(e) => setH1(e.target.value)}
-                className="w-full p-3 pl-4 text-xs font-bold border-none rounded-xl bg-white shadow-sm focus:ring-0 outline-none appearance-none cursor-pointer text-slate-700"
+          <div className="flex items-center space-x-3 mb-6 p-1 bg-slate-100 rounded-2xl relative z-20">
+            {/* Harbour 1 Selector */}
+            <div className="flex-1 relative group">
+              <button
+                onClick={() => { setIsOpenH1(!isOpenH1); setIsOpenH2(false); }}
+                className="w-full p-3 pl-4 text-xs font-bold border-none rounded-xl bg-white shadow-sm flex items-center justify-between text-slate-700 hover:bg-slate-50 transition-colors"
               >
-                {harbours.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                <span className="truncate mr-2">{harbours.find(h => h.id === h1)?.name || 'Select'}</span>
+                <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isOpenH1 ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isOpenH1 && (
+                <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-30 animate-slide-up-spring max-h-48 overflow-y-auto">
+                  {harbours.map(h => (
+                    <button
+                      key={h.id}
+                      onClick={() => { setH1(h.id); setIsOpenH1(false); }}
+                      className={`w-full text-left px-4 py-2 text-xs font-bold hover:bg-slate-50 transition-colors ${h1 === h.id ? 'text-blue-600 bg-blue-50' : 'text-slate-700'}`}
+                    >
+                      {h.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-black text-slate-500">VS</div>
-            <div className="flex-1 relative">
-              <select
-                value={h2}
-                onChange={(e) => setH2(e.target.value)}
-                className="w-full p-3 pl-4 text-xs font-bold border-none rounded-xl bg-white shadow-sm focus:ring-0 outline-none appearance-none cursor-pointer text-slate-700"
+
+            <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-black text-slate-500 flex-shrink-0">VS</div>
+
+            {/* Harbour 2 Selector */}
+            <div className="flex-1 relative group">
+              <button
+                onClick={() => { setIsOpenH2(!isOpenH2); setIsOpenH1(false); }}
+                className="w-full p-3 pl-4 text-xs font-bold border-none rounded-xl bg-white shadow-sm flex items-center justify-between text-slate-700 hover:bg-slate-50 transition-colors"
               >
-                {harbours.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                <span className="truncate mr-2">{harbours.find(h => h.id === h2)?.name || 'Select'}</span>
+                <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isOpenH2 ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isOpenH2 && (
+                <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-30 animate-slide-up-spring max-h-48 overflow-y-auto">
+                  {harbours.map(h => (
+                    <button
+                      key={h.id}
+                      onClick={() => { setH2(h.id); setIsOpenH2(false); }}
+                      className={`w-full text-left px-4 py-2 text-xs font-bold hover:bg-slate-50 transition-colors ${h2 === h.id ? 'text-blue-600 bg-blue-50' : 'text-slate-700'}`}
+                    >
+                      {h.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

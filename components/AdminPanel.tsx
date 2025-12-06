@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getHarbours, getSpecies, addRate, getRates, updateRateById, getSubscribers } from '../services/storageService';
 import { Harbour, Species, Rate, VerificationLevel } from '../types';
 import { getRelativeDate, parseCSV, shouldTriggerNotification, check_abnormal_change, formatCurrency, calculateConfidenceScore } from '../utils';
-import { Save, CheckCircle, ArrowLeft, Upload, FileText, History, Edit2, AlertCircle, BellRing, ShieldCheck, AlertTriangle, Mic, MicOff } from 'lucide-react';
+import { Save, CheckCircle, ArrowLeft, Upload, FileText, History, Edit2, AlertCircle, BellRing, ShieldCheck, AlertTriangle, Mic, MicOff, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useVoiceInput } from '../hooks/useVoiceInput';
 
@@ -52,6 +52,7 @@ export const AdminPanel: React.FC = () => {
   // UI Status
   const [status, setStatus] = useState<'idle' | 'success'>('idle');
   const [notificationLog, setNotificationLog] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<'harbour' | 'species' | 'verification' | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -211,17 +212,30 @@ export const AdminPanel: React.FC = () => {
           {activeTab === 'single' && (
             <form onSubmit={handleSingleSubmit} className="space-y-8">
               <div className="grid md:grid-cols-2 gap-8">
-                <div className="group">
+                <div className="relative group">
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Mandi Location</label>
-                  <select
-                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white outline-none font-bold text-slate-800 transition-all appearance-none cursor-pointer hover:bg-slate-100"
-                    value={selectedHarbour}
-                    onChange={(e) => setSelectedHarbour(e.target.value)}
-                    required
+                  <button
+                    type="button"
+                    onClick={() => { setOpenDropdown(openDropdown === 'harbour' ? null : 'harbour'); }}
+                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white outline-none font-bold text-slate-800 transition-all flex items-center justify-between hover:bg-slate-100"
                   >
-                    <option value="">Select Mandi...</option>
-                    {harbours.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
-                  </select>
+                    <span>{harbours.find(h => h.id === selectedHarbour)?.name || 'Select Mandi...'}</span>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${openDropdown === 'harbour' ? 'rotate-180' : ''}`} />
+                  </button>
+                  {openDropdown === 'harbour' && (
+                    <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-30 animate-slide-up-spring max-h-60 overflow-y-auto">
+                      {harbours.map(h => (
+                        <button
+                          key={h.id}
+                          type="button"
+                          onClick={() => { setSelectedHarbour(h.id); setOpenDropdown(null); }}
+                          className={`w-full text-left px-4 py-3 text-sm font-bold hover:bg-slate-50 transition-colors ${selectedHarbour === h.id ? 'text-blue-600 bg-blue-50' : 'text-slate-700'}`}
+                        >
+                          {h.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Record Date</label>
@@ -235,17 +249,30 @@ export const AdminPanel: React.FC = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="relative group">
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fish Species</label>
-                <select
-                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white outline-none font-bold text-slate-800 transition-all appearance-none cursor-pointer hover:bg-slate-100"
-                  value={selectedSpecies}
-                  onChange={(e) => setSelectedSpecies(e.target.value)}
-                  required
+                <button
+                  type="button"
+                  onClick={() => { setOpenDropdown(openDropdown === 'species' ? null : 'species'); }}
+                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white outline-none font-bold text-slate-800 transition-all flex items-center justify-between hover:bg-slate-100"
                 >
-                  <option value="">Select Species...</option>
-                  {species.map(s => <option key={s.id} value={s.id}>{s.name_en} ({s.name_local})</option>)}
-                </select>
+                  <span>{species.find(s => s.id === selectedSpecies)?.name_en || 'Select Species...'}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${openDropdown === 'species' ? 'rotate-180' : ''}`} />
+                </button>
+                {openDropdown === 'species' && (
+                  <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-30 animate-slide-up-spring max-h-60 overflow-y-auto">
+                    {species.map(s => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => { setSelectedSpecies(s.id); setOpenDropdown(null); }}
+                        className={`w-full text-left px-4 py-3 text-sm font-bold hover:bg-slate-50 transition-colors ${selectedSpecies === s.id ? 'text-blue-600 bg-blue-50' : 'text-slate-700'}`}
+                      >
+                        {s.name_en} <span className="text-xs text-slate-400 font-normal ml-1">({s.name_local})</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Data Accuracy Section */}
@@ -255,17 +282,30 @@ export const AdminPanel: React.FC = () => {
                   Data Verification Source
                 </h3>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div>
+                  <div className="relative">
                     <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Source Type</label>
-                    <select
-                      value={verificationLevel}
-                      onChange={(e) => setVerificationLevel(e.target.value as VerificationLevel)}
-                      className="w-full p-3 text-sm font-medium border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none"
+                    <button
+                      type="button"
+                      onClick={() => { setOpenDropdown(openDropdown === 'verification' ? null : 'verification'); }}
+                      className="w-full p-3 text-sm font-medium border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none bg-white flex items-center justify-between"
                     >
-                      <option value="Verified">Verified (On-site)</option>
-                      <option value="Phone Call">Phone Call</option>
-                      <option value="Unconfirmed">Unconfirmed</option>
-                    </select>
+                      <span>{verificationLevel}</span>
+                      <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${openDropdown === 'verification' ? 'rotate-180' : ''}`} />
+                    </button>
+                    {openDropdown === 'verification' && (
+                      <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-30 animate-slide-up-spring">
+                        {['Verified', 'Phone Call', 'Unconfirmed'].map((level) => (
+                          <button
+                            key={level}
+                            type="button"
+                            onClick={() => { setVerificationLevel(level as VerificationLevel); setOpenDropdown(null); }}
+                            className={`w-full text-left px-4 py-2 text-sm font-bold hover:bg-slate-50 transition-colors ${verificationLevel === level ? 'text-blue-600 bg-blue-50' : 'text-slate-700'}`}
+                          >
+                            {level}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Lots Checked</label>
@@ -414,7 +454,7 @@ export const AdminPanel: React.FC = () => {
           {activeTab === 'history' && (
             <div className="space-y-4 animate-fade-in">
               <h3 className="font-heading font-bold text-slate-700 mb-4">Recent Transactions</h3>
-              <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
+              <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-100">
                   <thead className="bg-slate-50">
                     <tr>

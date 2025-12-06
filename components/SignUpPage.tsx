@@ -67,6 +67,9 @@ export const SignUpPage: React.FC = () => {
         <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-10 animate-slide-up-spring">
 
           <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mb-6 shadow-lg shadow-emerald-500/30 transform -rotate-3 group">
+              <Anchor className="w-8 h-8 text-white group-hover:scale-110 transition-transform" />
+            </div>
             <h1 className="text-2xl font-heading font-extrabold text-slate-900 tracking-tight">Create Account</h1>
             <p className="text-slate-500 font-medium mt-2 text-sm">Join thousands of traders today.</p>
           </div>
@@ -121,7 +124,7 @@ export const SignUpPage: React.FC = () => {
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 text-red-600 text-xs font-bold rounded-lg text-center border border-red-100">
+              <div className="p-3 bg-red-50 text-red-600 text-xs font-bold rounded-lg text-center border border-red-100 animate-shake">
                 {error}
               </div>
             )}
@@ -129,16 +132,16 @@ export const SignUpPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-shine w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-heading font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 flex items-center justify-center group mt-2 transform hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+              className="btn-shine w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-heading font-bold py-4 rounded-xl transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 flex items-center justify-center group transform hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-2"
             >
-              <span>{loading ? 'Creating Account...' : 'Create Account'}</span>
+              <span>{loading ? 'Creating Account...' : 'Sign Up'}</span>
               {!loading && <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-slate-500 text-sm mt-8 font-medium">
-          Already have an account? <Link to="/login" className="text-blue-400 hover:text-white transition-colors font-bold">Sign in</Link>
+        <p className="text-center text-slate-500 text-sm mt-6 font-medium">
+          Already have an account? <Link to="/login" className="text-blue-400 hover:text-white transition-colors font-bold">Sign In</Link>
         </p>
       </div>
     </div>
