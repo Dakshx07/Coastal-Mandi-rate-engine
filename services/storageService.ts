@@ -1,0 +1,135 @@
+import { Harbour, Species, Rate, Subscriber } from '../types';
+import { supabase } from './supabaseClient';
+
+// --- Harbours ---
+export const getHarbours = async (): Promise<Harbour[]> => {
+  const { data, error } = await supabase
+    .from('harbours')
+    .select('*');
+
+  if (error) {
+    console.error('Error fetching harbours:', error);
+    return [];
+  }
+  return data || [];
+};
+
+// --- Species ---
+export const getSpecies = async (): Promise<Species[]> => {
+  const { data, error } = await supabase
+    .from('species')
+    .select('*');
+
+  if (error) {
+    console.error('Error fetching species:', error);
+    return [];
+  }
+  return data || [];
+};
+
+// --- Rates ---
+export const getRates = async (harbourId?: string, speciesId?: string): Promise<Rate[]> => {
+  let query = supabase.from('rates').select('*');
+
+  if (harbourId) {
+    query = query.eq('harbour_id', harbourId);
+  }
+  if (speciesId) {
+    query = query.eq('species_id', speciesId);
+  }
+
+  const { data, error } = await query.order('date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching rates:', error);
+    return [];
+  }
+  return data || [];
+};
+
+export const addRate = async (rate: Omit<Rate, 'id'>): Promise<Rate | null> => {
+  // Check if rate already exists for this harbour/species/date
+  const { data: existing } = await supabase
+    .from('rates')
+    .select('id')
+    .eq('harbour_id', rate.harbour_id)
+    .eq('species_id', rate.species_id)
+    .eq('date', rate.date)
+    .single();
+
+  if (existing) {
+    // Update existing
+    const { data, error } = await supabase
+      .from('rates')
+      .update({
+        price_per_kg: rate.price_per_kg,
+        verification_level: rate.verification_level,
+        lots_checked: rate.lots_checked,
+        rate_confidence_score: rate.rate_confidence_score,
+        source_admin_id: rate.source_admin_id
+      })
+      .eq('id', existing.id)
+      .select()
+      .single();
+
+    if (error) console.error('Error updating rate:', error);
+    return data;
+  } else {
+    // Insert new
+    const { data, error } = await supabase
+      .from('rates')
+      .insert(rate)
+      .select()
+      .single();
+
+    if (error) console.error('Error adding rate:', error);
+    return data;
+  }
+};
+
+export const updateRateById = async (rateId: string, newPrice: number): Promise<Rate | null> => {
+  const { data, error } = await supabase
+    .from('rates')
+    .update({ price_per_kg: newPrice })
+    .eq('id', rateId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating rate by ID:', error);
+    return null;
+  }
+  return data;
+};
+
+// --- Subscribers ---
+export const getSubscribers = async (harbourId: string): Promise<Subscriber[]> => {
+  const { data, error } = await supabase
+    .from('subscribers')
+    .select('*')
+    .eq('harbour_id_subscribed', harbourId);
+
+  if (error) {
+    console.error('Error fetching subscribers:', error);
+    return [];
+  }
+  return data || [];
+};
+
+export const addSubscriber = async (phone: string, harbourId: string): Promise<Subscriber | null> => {
+  const { data, error } = await supabase
+    .from('subscribers')
+    .insert({
+      phone_number: phone,
+      harbour_id_subscribed: harbourId,
+      opt_in_date: new Date().toISOString()
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding subscriber:', error);
+    return null;
+  }
+  return data;
+};

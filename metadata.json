@@ -1,0 +1,5 @@
+{
+  "name": "Coastal Mandi Rate Engine",
+  "description": "A real-time coastal market rate engine for fishermen and traders, featuring daily price tracking, trend analysis, and AI-driven market insights.",
+  "requestFramePermissions": []
+}
