@@ -56,8 +56,17 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // On mobile, redirect in same tab for better experience
-                window.location.href = razorpayPaymentLink;
+                // On mobile, use a hidden anchor tag to trigger navigation
+                // This is more reliable than window.location.href for deep links and WebViews
+                const link = document.createElement('a');
+                link.href = razorpayPaymentLink;
+                // Use _system target for Capacitor/Cordova apps to open in system browser
+                // For regular mobile browsers, this behaves like _blank or _self depending on settings
+                link.target = '_system';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             } else {
                 // On desktop, open in new tab
                 const newWindow = window.open(razorpayPaymentLink, '_blank');
