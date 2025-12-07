@@ -44,11 +44,8 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
         // Store phone number for later reference
         localStorage.setItem('coastal_mandi_premium_phone', `+91${phone}`);
 
-        // Get Razorpay payment link from environment variable
-        const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK;
-
-        // DEBUG: Check if link is loaded
-        alert(`Debug Link: ${razorpayPaymentLink || 'NOT FOUND'}`);
+        // Get Razorpay payment link from environment variable or use fallback
+        const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK || 'https://rzp.io/rzp/7HRhatUn';
 
         if (razorpayPaymentLink && razorpayPaymentLink.length > 5) {
             // IMPORTANT: On mobile, window.open inside setTimeout gets blocked
