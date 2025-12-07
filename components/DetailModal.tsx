@@ -104,8 +104,9 @@ export const DetailModal: React.FC<Props> = ({ summary, onClose }) => {
           {/* Smart Share Button */}
           <button
             onClick={() => {
+              const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '';
               const text = `🐟 *Fresh Catch Alert - ${summary.species.name_en}*\n\n📍 Location: Malpe Harbour\n💰 Rate: ₹${summary.todayRate?.price_per_kg}/kg\n✨ Quality: Premium Grade\n\n_Sent via Coastal Mandi App_`;
-              const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+              const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
               window.open(url, '_blank');
             }}
             className="w-full py-3 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-200"
