@@ -46,8 +46,11 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
 
         // Get Razorpay payment link from environment variable
         const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK;
+        
+        // DEBUG: Check if link is loaded
+        // alert(`Link: ${razorpayPaymentLink || 'NOT FOUND'}`);
 
-        if (razorpayPaymentLink) {
+        if (razorpayPaymentLink && razorpayPaymentLink.length > 5) {
             // IMPORTANT: On mobile, window.open inside setTimeout gets blocked
             // Using window.location.href for reliable mobile redirect
             // The user will be redirected to Razorpay payment page
