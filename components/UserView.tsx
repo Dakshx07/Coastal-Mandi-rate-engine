@@ -15,9 +15,9 @@ import { WhatsAppModal } from './WhatsAppModal';
 import { QuickCompare } from './QuickCompare';
 import { CatchCalculator } from './CatchCalculator';
 import { PriceTicker } from './PriceTicker';
-import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera } from 'lucide-react';
+import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera, Clock, ChevronRight } from 'lucide-react';
 
-type Tab = 'rates' | 'compare' | 'insights';
+type Tab = 'rates' | 'history' | 'compare' | 'insights';
 
 export const UserView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('rates');
@@ -38,9 +38,29 @@ export const UserView: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isGraderOpen, setIsGraderOpen] = useState(false);
 
+  // Recently Viewed State (persisted to localStorage)
+  const [recentlyViewed, setRecentlyViewed] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('coastal_mandi_recently_viewed');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   // AI Insight State
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+
+  // Function to add species to recently viewed
+  const addToRecentlyViewed = (speciesId: string) => {
+    setRecentlyViewed(prev => {
+      const filtered = prev.filter(id => id !== speciesId);
+      const updated = [speciesId, ...filtered].slice(0, 5); // Keep max 5
+      localStorage.setItem('coastal_mandi_recently_viewed', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   useEffect(() => {
     const loadHarbours = async () => {
@@ -198,6 +218,50 @@ export const UserView: React.FC = () => {
               />
             </div>
 
+            {/* Quick Recently Viewed Preview */}
+            {recentlyViewed.length > 0 && (
+              <div className="mb-4 animate-fade-in">
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <div className="flex items-center">
+                    <Clock className="w-3 h-3 text-orange-400 mr-1.5" />
+                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recent</h3>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('history')}
+                    className="text-[10px] text-orange-500 hover:text-orange-600 font-bold transition-colors flex items-center gap-0.5"
+                  >
+                    See All <ChevronRight className="w-3 h-3" />
+                  </button>
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
+                  {recentlyViewed.slice(0, 3).map((speciesId) => {
+                    const summary = summaries.find(s => s.species.id === speciesId);
+                    if (!summary) return null;
+                    return (
+                      <button
+                        key={speciesId}
+                        onClick={() => {
+                          addToRecentlyViewed(speciesId);
+                          setSelectedSummary(summary);
+                        }}
+                        className="flex-shrink-0 bg-orange-50 hover:bg-orange-100 rounded-lg px-3 py-1.5 border border-orange-100 transition-all text-xs font-bold text-orange-700"
+                      >
+                        {summary.species.name_en}
+                      </button>
+                    );
+                  })}
+                  {recentlyViewed.length > 3 && (
+                    <button
+                      onClick={() => setActiveTab('history')}
+                      className="flex-shrink-0 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-all text-xs font-bold text-slate-500"
+                    >
+                      +{recentlyViewed.length - 3} more
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="flex justify-between items-end px-1 mb-2">
               <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">{t('rates.today')}</h3>
               <span className="text-xs text-slate-400">
@@ -224,7 +288,10 @@ export const UserView: React.FC = () => {
                   <div key={summary.species.id} style={{ animationDelay: `${idx * 50}ms` }} className="animate-fade-in">
                     <SpeciesCard
                       summary={summary}
-                      onClick={() => setSelectedSummary(summary)}
+                      onClick={() => {
+                        addToRecentlyViewed(summary.species.id);
+                        setSelectedSummary(summary);
+                      }}
                     />
                   </div>
                 ))
@@ -265,7 +332,103 @@ export const UserView: React.FC = () => {
           </div>
         )}
 
-        {/* --- TAB 3: INSIGHTS --- */}
+        {/* --- TAB 3: HISTORY --- */}
+        {activeTab === 'history' && (
+          <div className="animate-fade-in space-y-4">
+            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center mb-4">
+              <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Clock className="w-6 h-6 text-orange-500" />
+              </div>
+              <h2 className="text-lg font-heading font-bold text-slate-900">Recently Viewed</h2>
+              <p className="text-sm text-slate-500 mt-1">Your browsing history for quick access</p>
+            </div>
+
+            {recentlyViewed.length === 0 ? (
+              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm text-center">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Clock className="w-8 h-8 text-slate-300" />
+                </div>
+                <h3 className="text-base font-bold text-slate-700 mb-2">No History Yet</h3>
+                <p className="text-sm text-slate-400 max-w-xs mx-auto">
+                  Start exploring fish rates to build your browsing history. Tap on any species to view details.
+                </p>
+                <button
+                  onClick={() => setActiveTab('rates')}
+                  className="mt-4 px-6 py-2 bg-orange-500 text-white text-sm font-bold rounded-xl hover:bg-orange-600 transition-colors"
+                >
+                  Browse Rates
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* Clear All Button */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => {
+                      setRecentlyViewed([]);
+                      localStorage.removeItem('coastal_mandi_recently_viewed');
+                    }}
+                    className="text-xs text-slate-400 hover:text-red-500 font-bold transition-colors flex items-center gap-1"
+                  >
+                    <X className="w-3 h-3" />
+                    Clear All
+                  </button>
+                </div>
+
+                {/* History Cards */}
+                {recentlyViewed.map((speciesId, idx) => {
+                  const summary = summaries.find(s => s.species.id === speciesId);
+                  if (!summary) return null;
+                  return (
+                    <button
+                      key={speciesId}
+                      onClick={() => {
+                        addToRecentlyViewed(speciesId);
+                        setSelectedSummary(summary);
+                      }}
+                      style={{ animationDelay: `${idx * 50}ms` }}
+                      className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all animate-fade-in group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center overflow-hidden">
+                          <img
+                            src={summary.species.image_url}
+                            alt={summary.species.name_en}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-bold text-slate-800 group-hover:text-orange-600 transition-colors">
+                            {summary.species.name_en}
+                          </div>
+                          <div className="text-xs text-slate-400">{summary.species.name_local}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-lg font-bold ${summary.change.status === 'UP' ? 'text-emerald-600' :
+                          summary.change.status === 'DOWN' ? 'text-red-500' : 'text-slate-600'
+                          }`}>
+                          ₹{summary.todayRate?.price_per_kg || 'N/A'}
+                        </div>
+                        {summary.change.status !== 'SAME' && (
+                          <div className={`text-xs font-bold ${summary.change.status === 'UP' ? 'text-emerald-500' : 'text-red-400'
+                            }`}>
+                            {summary.change.status === 'UP' ? '↑' : '↓'} {summary.change.percentDiff.toFixed(1)}%
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* --- TAB 4: INSIGHTS --- */}
         {activeTab === 'insights' && (
           <div className="animate-fade-in space-y-4">
             <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center mb-4">
@@ -348,6 +511,21 @@ export const UserView: React.FC = () => {
             <ArrowLeftRight className="w-6 h-6" />
           </div>
           <span className="text-[10px] font-bold">{t('nav.compare')}</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`flex flex-col items-center space-y-1 transition-all duration-300 ${activeTab === 'history' ? 'text-orange-600 scale-110' : 'text-slate-400 hover:text-slate-600'}`}
+        >
+          <div className={`p-1.5 rounded-xl relative ${activeTab === 'history' ? 'bg-orange-50' : 'bg-transparent'}`}>
+            <Clock className="w-6 h-6" />
+            {recentlyViewed.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                {recentlyViewed.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] font-bold">History</span>
         </button>
 
         <button
