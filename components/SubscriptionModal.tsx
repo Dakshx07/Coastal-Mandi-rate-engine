@@ -111,49 +111,61 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
             {/* Modal */}
-            <div className="relative bg-white w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up-spring">
-                {/* Header */}
-                <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-6 pb-12">
+            <div className="relative bg-white dark:bg-slate-800 w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up-spring flex flex-col">
+                {/* Header with Wave Design */}
+                <div className="relative bg-gradient-to-br from-cyan-600 via-teal-600 to-emerald-600 p-6 pb-16 overflow-hidden shrink-0">
+                    {/* Decorative Circles */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-400/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
+
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                        className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors z-10 backdrop-blur-sm"
                     >
                         <X className="w-5 h-5 text-white" />
                     </button>
 
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
-                            <Sparkles className="w-7 h-7 text-white" />
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="p-3.5 bg-white/20 rounded-2xl backdrop-blur-md shadow-inner border border-white/10">
+                            <Sparkles className="w-8 h-8 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-heading font-bold text-white">Subscribe & Save</h2>
-                            <p className="text-white/80 text-sm">Never miss a price update</p>
+                            <h2 className="text-2xl font-heading font-bold text-white tracking-tight">Unlock Pro Features</h2>
+                            <p className="text-cyan-50 text-sm font-medium">Get accurate AI predictions & alerts</p>
                         </div>
+                    </div>
+
+                    {/* Wave SVG */}
+                    <div className="absolute bottom-0 left-0 right-0 translate-y-px">
+                        <svg viewBox="0 0 1440 320" className="w-full h-auto text-white fill-current">
+                            <path d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                        </svg>
                     </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-5 -mt-8 space-y-4 overflow-y-auto max-h-[60vh]">
+                <div className="p-6 -mt-4 space-y-6 overflow-y-auto flex-1 relative z-10">
                     {subscribed ? (
                         // Success State
-                        <div className="bg-white rounded-2xl p-8 text-center shadow-lg border border-slate-100">
-                            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Check className="w-10 h-10 text-emerald-600" />
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 text-center shadow-xl border border-slate-100 dark:border-slate-700 mx-2 mb-4">
+                            <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+                                <div className="absolute inset-0 bg-emerald-100 dark:bg-emerald-900/20 rounded-full animate-ping opacity-20" />
+                                <Check className="w-12 h-12 text-emerald-500" />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">You're All Set! 🎉</h3>
-                            <p className="text-slate-500">
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">You're All Set! 🎉</h3>
+                            <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
                                 {selectedPlan === 'premium'
                                     ? 'Complete your payment on Razorpay to activate Premium features. You\'ll receive confirmation on WhatsApp.'
                                     : 'You\'ll receive daily price updates on WhatsApp.'}
                             </p>
                             <button
                                 onClick={onClose}
-                                className="mt-6 w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors"
+                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 active:scale-[0.98]"
                             >
                                 Done
                             </button>
@@ -161,71 +173,78 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
                     ) : (
                         <>
                             {/* Plan Selection */}
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-4 pt-2 px-1">
                                 {plans.map((plan) => (
                                     <button
                                         key={plan.id}
                                         onClick={() => setSelectedPlan(plan.id as 'free' | 'premium')}
-                                        className={`relative p-4 rounded-2xl border-2 transition-all text-left ${selectedPlan === plan.id
-                                            ? 'border-indigo-500 bg-indigo-50 shadow-lg scale-[1.02]'
-                                            : 'border-slate-200 bg-white hover:border-slate-300'
+                                        className={`relative p-5 rounded-3xl border-2 transition-all duration-300 text-left group ${selectedPlan === plan.id
+                                            ? 'border-teal-500 bg-teal-50/50 dark:bg-teal-900/20 shadow-xl shadow-teal-100/50 dark:shadow-none scale-[1.02] z-10'
+                                            : 'border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-teal-200 dark:hover:border-teal-800 hover:shadow-lg'
                                             }`}
                                     >
                                         {plan.badge && (
-                                            <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded-full">
+                                            <span className="absolute -top-3 -right-2 px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold rounded-full shadow-md transform group-hover:scale-110 transition-transform">
                                                 {plan.badge}
                                             </span>
                                         )}
-                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-3`}>
-                                            <plan.icon className="w-5 h-5 text-white" />
+                                        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                                            <plan.icon className="w-6 h-6 text-white" />
                                         </div>
-                                        <div className="text-lg font-bold text-slate-900">{plan.name}</div>
+                                        <div className="text-lg font-bold text-slate-800 dark:text-white mb-1">{plan.name}</div>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-2xl font-bold text-slate-900">{plan.price}</span>
-                                            <span className="text-xs text-slate-400">{plan.period}</span>
+                                            <span className="text-3xl font-heading font-bold text-slate-900 dark:text-white">{plan.price}</span>
+                                            <span className="text-xs font-medium text-slate-400 dark:text-slate-500">{plan.period}</span>
                                         </div>
                                     </button>
                                 ))}
                             </div>
 
                             {/* Selected Plan Features */}
-                            <div className="bg-slate-50 rounded-2xl p-4">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+                            <div className="bg-slate-50/80 dark:bg-slate-900/50 rounded-3xl p-5 border border-slate-100 dark:border-slate-700">
+                                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <span className="w-1 h-1 rounded-full bg-slate-400 dark:bg-slate-500" />
                                     What's Included
+                                    <span className="w-full h-px bg-slate-200 dark:bg-slate-700 ml-2" />
                                 </h4>
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     {plans.find(p => p.id === selectedPlan)?.features.map((feature, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 text-sm">
-                                            <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                                            <span className="text-slate-700">{feature}</span>
+                                        <div key={idx} className="flex items-start gap-3 text-sm group">
+                                            <div className="p-0.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-full mt-0.5 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-800 transition-colors">
+                                                <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                            </div>
+                                            <span className="text-slate-600 dark:text-slate-300 font-medium">{feature}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Phone Input */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <span className="text-slate-400 font-bold">+91</span>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-1 uppercase tracking-wider">WhatsApp Number</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none border-r border-slate-100 dark:border-slate-700 pr-3 my-2">
+                                        <span className="text-slate-500 dark:text-slate-400 font-bold text-lg">🇮🇳 +91</span>
+                                    </div>
+                                    <input
+                                        type="tel"
+                                        placeholder="98765 43210"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                        className="w-full pl-28 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-slate-600 focus:outline-none focus:ring-0 focus:border-teal-500 focus:bg-white dark:focus:bg-slate-800 text-lg font-bold transition-all shadow-sm group-hover:border-slate-200 dark:group-hover:border-slate-600"
+                                        maxLength={10}
+                                    />
                                 </div>
-                                <input
-                                    type="tel"
-                                    placeholder="Enter your WhatsApp number"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                    className="w-full pl-14 pr-4 py-4 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-lg"
-                                    maxLength={10}
-                                />
                             </div>
 
                             {/* Subscribe Button */}
                             <button
                                 onClick={selectedPlan === 'free' ? handleFreeSubscription : handlePremiumSubscription}
                                 disabled={isProcessing}
-                                className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg ${selectedPlan === 'premium'
-                                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-amber-200'
-                                    : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-200'
-                                    } ${isProcessing ? 'opacity-70 cursor-wait' : ''}`}
+                                className={`w-full py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.98] ${selectedPlan === 'premium'
+                                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-orange-200'
+                                    : 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 shadow-teal-200'
+                                    } ${isProcessing ? 'opacity-80 cursor-wait' : ''}`}
                             >
                                 {isProcessing ? (
                                     <>
@@ -240,24 +259,26 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
                                 ) : (
                                     <>
                                         <MessageCircle className="w-5 h-5" />
-                                        Subscribe Free via WhatsApp
+                                        Subscribe Free
                                     </>
                                 )}
                             </button>
 
                             {/* Trust Badges */}
-                            <div className="flex items-center justify-center gap-4 pt-2">
-                                <div className="flex items-center gap-1 text-xs text-slate-400">
-                                    <Shield className="w-4 h-4" />
+                            <div className="flex items-center justify-center gap-6 pt-2 pb-2 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    <Shield className="w-3.5 h-3.5" />
                                     Secure
                                 </div>
-                                <div className="flex items-center gap-1 text-xs text-slate-400">
-                                    <Zap className="w-4 h-4" />
+                                <div className="w-px h-3 bg-slate-300 dark:bg-slate-600" />
+                                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    <Zap className="w-3.5 h-3.5" />
                                     Instant
                                 </div>
-                                <div className="flex items-center gap-1 text-xs text-slate-400">
-                                    <Star className="w-4 h-4" />
-                                    4.8★ Rated
+                                <div className="w-px h-3 bg-slate-300 dark:bg-slate-600" />
+                                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    <Star className="w-3.5 h-3.5" />
+                                    4.8/5
                                 </div>
                             </div>
                         </>

@@ -71,32 +71,32 @@ export const DetailModal: React.FC<Props> = ({ summary, onClose }) => {
         onClick={onClose}
       />
 
-      <div className="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl shadow-2xl pointer-events-auto animate-slide-up-spring overflow-hidden max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-t-[32px] sm:rounded-3xl shadow-2xl pointer-events-auto animate-slide-up-spring overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Sticky Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/95 backdrop-blur-md sticky top-0 z-10">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-white/95 dark:bg-slate-800/95 backdrop-blur-md sticky top-0 z-10">
           <div>
-            <h2 className="text-xl font-heading font-bold text-slate-800">{summary.species.name_en}</h2>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{summary.species.name_local}</p>
+            <h2 className="text-xl font-heading font-bold text-slate-800 dark:text-white">{summary.species.name_en}</h2>
+            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{summary.species.name_local}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors border border-slate-100"
+            className="p-2 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-full transition-colors border border-slate-100 dark:border-slate-600"
           >
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
 
-        <div className="p-6 bg-white space-y-6">
+        <div className="p-6 bg-white dark:bg-slate-800 space-y-6">
           {/* Current Price Block */}
           <div className="flex justify-between items-end">
             <div>
-              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">{t('detail.current_rate')}</span>
-              <span className="text-4xl font-heading font-extrabold text-slate-900 tracking-tight">
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block mb-1">{t('detail.current_rate')}</span>
+              <span className="text-4xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
                 {summary.todayRate ? formatCurrency(summary.todayRate.price_per_kg) : 'N/A'}
               </span>
-              <span className="text-sm font-semibold text-slate-400 ml-1">/kg</span>
+              <span className="text-sm font-semibold text-slate-400 dark:text-slate-500 ml-1">/kg</span>
             </div>
-            <div className={`px-3 py-1.5 rounded-lg text-xs font-bold ${summary.change.status === 'UP' ? 'bg-emerald-100 text-emerald-700' : summary.change.status === 'DOWN' ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-600'}`}>
+            <div className={`px-3 py-1.5 rounded-lg text-xs font-bold ${summary.change.status === 'UP' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : summary.change.status === 'DOWN' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'}`}>
               {summary.change.description} Today
             </div>
           </div>
@@ -203,7 +203,7 @@ _via Coastal Mandi App_ 🌊`;
 
           {/* Insights Block */}
           {loadingPred ? (
-            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 relative overflow-hidden">
+            <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent -translate-x-full animate-shimmer"></div>
               <div className="flex flex-col items-center justify-center space-y-3 text-center">
                 <div className="p-3 bg-blue-100/50 rounded-full animate-pulse">
@@ -218,7 +218,7 @@ _via Coastal Mandi App_ 🌊`;
           ) : (
             <div className="space-y-4">
               {/* Insight Card */}
-              <div className="p-5 bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl shadow-sm relative overflow-hidden group">
+              <div className="p-5 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
 
                 <div className="flex items-start space-x-3 relative z-10">
@@ -226,8 +226,8 @@ _via Coastal Mandi App_ 🌊`;
                     <Sparkles className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-heading font-bold text-slate-800 text-sm mb-1">{t('ai.forecast_title')}</h4>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                    <h4 className="font-heading font-bold text-slate-800 dark:text-white text-sm mb-1">{t('ai.forecast_title')}</h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
                       {predictions.length > 0
                         ? generateSpeciesForecast(summary.species.name_en, summary.todayRate?.price_per_kg || 0, predictions)
                         : "Analysis unavailable."
@@ -239,16 +239,16 @@ _via Coastal Mandi App_ 🌊`;
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
-                  <div className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-wider mb-1">{t('stats.trend')}</div>
-                  <div className="text-sm font-bold text-emerald-700 flex items-center">
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30 rounded-xl">
+                  <div className="text-[10px] font-bold text-emerald-600/70 dark:text-emerald-400/70 uppercase tracking-wider mb-1">{t('stats.trend')}</div>
+                  <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400 flex items-center">
                     <TrendingUp className="w-4 h-4 mr-1" />
                     {predictions.length > 0 && predictions[6].price > (summary.todayRate?.price_per_kg || 0) ? t('stats.bullish') : t('stats.bearish')}
                   </div>
                 </div>
-                <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
-                  <div className="text-[10px] font-bold text-indigo-600/70 uppercase tracking-wider mb-1">{t('stats.target_price')}</div>
-                  <div className="text-sm font-bold text-indigo-700 flex items-center">
+                <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-900/30 rounded-xl">
+                  <div className="text-[10px] font-bold text-indigo-600/70 dark:text-indigo-400/70 uppercase tracking-wider mb-1">{t('stats.target_price')}</div>
+                  <div className="text-sm font-bold text-indigo-700 dark:text-indigo-400 flex items-center">
                     <Activity className="w-4 h-4 mr-1" />
                     {predictions.length > 0 ? formatCurrency(Math.max(...predictions.map(p => p.price))) : '-'}
                   </div>

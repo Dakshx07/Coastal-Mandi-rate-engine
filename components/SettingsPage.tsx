@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -9,12 +10,16 @@ import {
   Database,
   LogOut,
   ChevronRight,
-  Crown
+  Crown,
+  Moon,
+  Sun,
+  Monitor
 } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { language, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
   const [dataSaver, setDataSaver] = useState(false);
@@ -30,35 +35,35 @@ export const SettingsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-nunito">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-nunito transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white sticky top-0 z-30 border-b border-slate-100">
+      <div className="bg-white dark:bg-slate-800 sticky top-0 z-30 border-b border-slate-100 dark:border-slate-700 transition-colors duration-300">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center">
-          <Link to="/" className="p-2 -ml-2 hover:bg-slate-50 rounded-full transition-colors">
-            <ArrowLeft className="w-6 h-6 text-slate-700" />
+          <Link to="/" className="p-2 -ml-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors">
+            <ArrowLeft className="w-6 h-6 text-slate-700 dark:text-slate-200" />
           </Link>
-          <h1 className="ml-2 text-xl font-heading font-bold text-slate-900">Settings</h1>
+          <h1 className="ml-2 text-xl font-heading font-bold text-slate-900 dark:text-white">Settings</h1>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-6">
 
         {/* Profile Card */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center space-x-5 animate-fade-in hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center space-x-5 animate-fade-in hover:shadow-md transition-all">
           <div className="relative">
             <img
               src={user.avatar}
               alt={user.name}
-              className="w-20 h-20 rounded-2xl border-4 border-slate-50 shadow-inner"
+              className="w-20 h-20 rounded-2xl border-4 border-slate-50 dark:border-slate-700 shadow-inner"
             />
-            <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-lg border-2 border-white">
+            <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-lg border-2 border-white dark:border-slate-800">
               <Shield className="w-3 h-3" />
             </div>
           </div>
           <div>
-            <h2 className="text-xl font-heading font-bold text-slate-900">{user.name}</h2>
-            <p className="text-slate-500 font-medium text-sm">{user.email}</p>
-            <div className="mt-2 inline-flex px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-wide">
+            <h2 className="text-xl font-heading font-bold text-slate-900 dark:text-white">{user.name}</h2>
+            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">{user.email}</p>
+            <div className="mt-2 inline-flex px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wide">
               Verified User
             </div>
           </div>
@@ -66,40 +71,78 @@ export const SettingsPage: React.FC = () => {
 
         {/* Preferences */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider px-2">App Preferences</h3>
+          <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2">App Preferences</h3>
 
-          <div className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-700 shadow-sm">
+
+            {/* Theme Selector */}
+            <div className="p-4 flex items-center justify-between border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
+              <div className="flex items-center space-x-4">
+                <div className="p-2 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl">
+                  {theme === 'light' ? <Sun className="w-5 h-5" /> : theme === 'dark' ? <Moon className="w-5 h-5" /> : <Monitor className="w-5 h-5" />}
+                </div>
+                <div>
+                  <div className="font-bold text-slate-800 dark:text-white">Appearance</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    {theme === 'light' ? 'Light Mode' : theme === 'dark' ? 'Dark Mode' : 'System Default'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl">
+                <button
+                  onClick={() => setTheme('light')}
+                  className={`p-2 rounded-lg transition-all ${theme === 'light' ? 'bg-white dark:bg-slate-600 shadow-sm text-amber-500' : 'text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                  title="Light Mode"
+                >
+                  <Sun className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setTheme('dark')}
+                  className={`p-2 rounded-lg transition-all ${theme === 'dark' ? 'bg-white dark:bg-slate-600 shadow-sm text-indigo-500 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                  title="Dark Mode"
+                >
+                  <Moon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setTheme('system')}
+                  className={`p-2 rounded-lg transition-all ${theme === 'system' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                  title="System Default"
+                >
+                  <Monitor className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
 
             {/* WhatsApp Alerts */}
-            <div className="p-4 flex items-center justify-between border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+            <div className="p-4 flex items-center justify-between border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
               <div className="flex items-center space-x-4">
-                <div className="p-2 bg-green-50 text-green-600 rounded-xl">
+                <div className="p-2 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl">
                   <Bell className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-800">WhatsApp Alerts</div>
-                  <div className="text-xs text-slate-500 font-medium">Daily rate updates</div>
+                  <div className="font-bold text-slate-800 dark:text-white">WhatsApp Alerts</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Daily rate updates</div>
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" checked={notifications} onChange={() => setNotifications(!notifications)} />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
+                <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
               </label>
             </div>
 
             {/* Language Selector */}
-            <div className="p-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+            <div className="p-4 flex items-center justify-between hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
               <div className="flex items-center space-x-4">
-                <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
                   <Database className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-800">App Language</div>
-                  <div className="text-xs text-slate-500 font-medium">English, Hindi, Malayalam...</div>
+                  <div className="font-bold text-slate-800 dark:text-white">App Language</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">English, Hindi, Malayalam...</div>
                 </div>
               </div>
               <select
-                className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-bold"
+                className="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-bold"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as any)}
               >
@@ -114,34 +157,34 @@ export const SettingsPage: React.FC = () => {
 
         {/* Management */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider px-2">Management</h3>
+          <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2">Management</h3>
 
-          <Link to="/admin" className="block bg-white rounded-2xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all active:scale-[0.99] group">
+          <Link to="/admin" className="block bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all active:scale-[0.99] group">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="p-2 bg-slate-900 text-white rounded-xl group-hover:scale-110 transition-transform shadow-md shadow-slate-900/20">
+                <div className="p-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl group-hover:scale-110 transition-transform shadow-md shadow-slate-900/20">
                   <Shield className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-800">Admin Panel</div>
-                  <div className="text-xs text-slate-500 font-medium">Manage rates & users</div>
+                  <div className="font-bold text-slate-800 dark:text-white">Admin Panel</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Manage rates & users</div>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-slate-600 transition-colors" />
+              <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors" />
             </div>
           </Link>
         </div>
 
         <button
           onClick={handleLogout}
-          className="w-full mt-8 p-4 bg-red-50 text-red-600 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-red-100 transition-colors border border-red-100 active:scale-[0.98]"
+          className="w-full mt-8 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors border border-red-100 dark:border-red-900/30 active:scale-[0.98]"
         >
           <LogOut className="w-5 h-5" />
           <span>Sign Out</span>
         </button>
 
         <div className="text-center pt-8 pb-4">
-          <p className="text-xs font-bold text-slate-300">Coastal Mandi App v1.2.0</p>
+          <p className="text-xs font-bold text-slate-300 dark:text-slate-600">Coastal Mandi App v1.2.0</p>
         </div>
       </div>
     </div>

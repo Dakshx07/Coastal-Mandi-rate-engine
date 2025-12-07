@@ -30,12 +30,12 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick, isInCart = fals
   };
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-200 group relative overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all duration-200 group relative overflow-hidden">
       <div className="flex items-start space-x-4">
         {/* Image Thumbnail */}
         <div
           onClick={onClick}
-          className="w-16 h-16 rounded-xl bg-slate-100 shrink-0 overflow-hidden relative shadow-inner cursor-pointer"
+          className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-700 shrink-0 overflow-hidden relative shadow-inner cursor-pointer"
         >
           <img
             src={species.image_url}
@@ -49,10 +49,10 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick, isInCart = fals
         <div className="flex-1 min-w-0 cursor-pointer" onClick={onClick}>
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-base font-heading font-bold text-slate-800 leading-tight truncate">
+              <h3 className="text-base font-heading font-bold text-slate-800 dark:text-white leading-tight truncate">
                 {species.name_en}
               </h3>
-              <p className="text-xs text-slate-500 font-medium truncate">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate">
                 {species.name_local}
               </p>
             </div>
@@ -61,10 +61,10 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick, isInCart = fals
             <div className="text-right">
               {todayRate ? (
                 <div className="flex flex-col items-end">
-                  <span className="text-lg font-bold text-slate-900 leading-none tracking-tight">
+                  <span className="text-lg font-bold text-slate-900 dark:text-white leading-none tracking-tight">
                     {formatCurrency(todayRate.price_per_kg)}
                   </span>
-                  <span className="text-[10px] text-slate-400 font-semibold mt-1">/kg</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-1">/kg</span>
                 </div>
               ) : (
                 <span className="text-xs text-slate-400 font-medium italic">No Data</span>
@@ -83,7 +83,7 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick, isInCart = fals
 
               {/* Trust Badge */}
               {todayRate && (
-                <div className="flex items-center space-x-1 text-[10px] text-slate-400 font-semibold px-2 py-1 bg-slate-50 rounded-md border border-slate-100">
+                <div className="flex items-center space-x-1 text-[10px] text-slate-400 dark:text-slate-500 font-semibold px-2 py-1 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-md">
                   <ShieldCheck className={`w-3 h-3 ${getConfidenceColor(confidenceScore)}`} />
                   <span>{confidenceScore}% Trust</span>
                 </div>
@@ -100,8 +100,8 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick, isInCart = fals
               onCartToggle();
             }}
             className={`p-2 rounded-xl transition-all duration-200 flex-shrink-0 ${isInCart
-                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-105'
-                : 'bg-slate-100 text-slate-400 hover:bg-emerald-50 hover:text-emerald-500'
+              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-105'
+              : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-300 hover:bg-emerald-50 hover:text-emerald-500 dark:hover:bg-emerald-900/30'
               }`}
           >
             {isInCart ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}

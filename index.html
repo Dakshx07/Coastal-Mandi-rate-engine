@@ -9,6 +9,19 @@
     <link rel="apple-touch-icon" href="/logo.svg">
     <link rel="mask-icon" href="/logo.svg" color="#0F62FE">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#0F62FE',
+              secondary: '#08BDBA',
+            }
+          }
+        }
+      }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       :root {
@@ -44,11 +57,22 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
       }
 
+      .dark .glass {
+        background: rgba(15, 23, 42, 0.9);
+        border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      }
+
       .glass-card {
         background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.5);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      }
+
+      .dark .glass-card {
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
       }
 
       /* Premium Button Shine Effect */

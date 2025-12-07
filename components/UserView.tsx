@@ -206,19 +206,19 @@ export const UserView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 relative bg-slate-50 font-nunito overflow-x-hidden">
+    <div className="min-h-screen pb-24 relative bg-slate-50 dark:bg-slate-900 font-nunito overflow-x-hidden transition-colors duration-300">
       {/* Live Ticker */}
       <PriceTicker summaries={summaries} />
 
       {/* Top Navbar - Relative (Scrolls Away) to maximize data view */}
-      <div className="glass px-5 py-4 flex justify-between items-center relative z-30 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-        <div className="text-sm font-extrabold text-slate-800 tracking-tight font-heading flex items-center">
+      <div className="glass dark:bg-slate-900/80 dark:border-slate-700 px-5 py-4 flex justify-between items-center relative z-30 shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-colors duration-300">
+        <div className="text-sm font-extrabold text-slate-800 dark:text-white tracking-tight font-heading flex items-center">
           <span className="w-2.5 h-2.5 bg-[var(--color-primary)] rounded-full mr-2"></span>
           {t('app.title')}
         </div>
         {user ? (
-          <Link to="/settings" className="flex items-center space-x-2 bg-slate-100/50 hover:bg-slate-100 pr-1 pl-3 py-1 rounded-full border border-slate-200 transition-all">
-            <span className="text-xs font-bold text-slate-600">{t('common.settings')}</span>
+          <Link to="/settings" className="flex items-center space-x-2 bg-slate-100/50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 pr-1 pl-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 transition-all">
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{t('common.settings')}</span>
             <img
               src={user.avatar}
               alt={user.name}
@@ -284,7 +284,7 @@ export const UserView: React.FC = () => {
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-sm"
+                className="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-700 rounded-xl leading-5 bg-white dark:bg-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-sm"
                 placeholder={t('search.placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -307,7 +307,7 @@ export const UserView: React.FC = () => {
                 </div>
 
                 {crossHarbourResults.length > 0 ? (
-                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-4 border border-purple-100">
+                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-4 border border-purple-100 dark:border-slate-700">
                     {/* Group by species */}
                     {Array.from(new Set(crossHarbourResults.map(r => r.species.id))).map(speciesId => {
                       const speciesResults = crossHarbourResults.filter(r => r.species.id === speciesId);
@@ -316,9 +316,9 @@ export const UserView: React.FC = () => {
 
                       return (
                         <div key={speciesId} className="mb-4 last:mb-0">
-                          <h4 className="text-sm font-bold text-slate-800 mb-2 flex items-center">
+                          <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-2 flex items-center">
                             🐟 {species.name_en}
-                            <span className="text-xs text-slate-400 ml-2 font-normal">({species.name_local})</span>
+                            <span className="text-xs text-slate-400 dark:text-slate-500 ml-2 font-normal">({species.name_local})</span>
                           </h4>
                           <div className="grid grid-cols-2 gap-2">
                             {speciesResults.map((result, idx) => (
@@ -329,8 +329,8 @@ export const UserView: React.FC = () => {
                                   setSearchTerm('');
                                 }}
                                 className={`p-3 rounded-xl text-left transition-all ${result.rate
-                                  ? 'bg-white hover:shadow-md border border-slate-100'
-                                  : 'bg-slate-50 border border-slate-100'
+                                  ? 'bg-white dark:bg-slate-800 hover:shadow-md border border-slate-100 dark:border-slate-700'
+                                  : 'bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700'
                                   }`}
                               >
                                 <div className="text-[10px] font-bold text-purple-600 uppercase tracking-wider truncate">
@@ -338,7 +338,7 @@ export const UserView: React.FC = () => {
                                 </div>
                                 {result.rate ? (
                                   <div className="flex items-center justify-between mt-1">
-                                    <span className="text-base font-bold text-slate-800">
+                                    <span className="text-base font-bold text-slate-800 dark:text-white">
                                       ₹{result.rate.price_per_kg}
                                     </span>
                                     <span className={`text-[10px] font-bold ${result.change.status === 'UP' ? 'text-emerald-500' :
@@ -421,7 +421,7 @@ export const UserView: React.FC = () => {
             {loading ? (
               <div className="space-y-4">
                 {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="h-24 bg-white rounded-2xl animate-pulse shadow-sm border border-slate-100"></div>
+                  <div key={i} className="h-24 bg-white dark:bg-slate-800 rounded-2xl animate-pulse shadow-sm border border-slate-100 dark:border-slate-700"></div>
                 ))}
               </div>
             ) : (
@@ -469,12 +469,12 @@ export const UserView: React.FC = () => {
         {/* --- TAB 2: COMPARE --- */}
         {activeTab === 'compare' && (
           <div className="animate-fade-in space-y-4">
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center mb-4">
-              <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                <ArrowLeftRight className="w-6 h-6 text-indigo-500" />
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm text-center mb-4">
+              <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                <ArrowLeftRight className="w-6 h-6 text-indigo-500 dark:text-indigo-400" />
               </div>
-              <h2 className="text-lg font-heading font-bold text-slate-900">{t('compare.title')}</h2>
-              <p className="text-sm text-slate-500 mt-1">{t('compare.subtitle')}</p>
+              <h2 className="text-lg font-heading font-bold text-slate-900 dark:text-white">{t('compare.title')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('compare.subtitle')}</p>
             </div>
             <QuickCompare harbours={harbours} defaultOpen={true} />
           </div>
@@ -483,21 +483,21 @@ export const UserView: React.FC = () => {
         {/* --- TAB 3: CART --- */}
         {activeTab === 'cart' && (
           <div className="animate-fade-in space-y-4">
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center mb-4">
-              <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                <ShoppingCart className="w-6 h-6 text-emerald-500" />
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm text-center mb-4">
+              <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                <ShoppingCart className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
               </div>
-              <h2 className="text-lg font-heading font-bold text-slate-900">My Watchlist</h2>
-              <p className="text-sm text-slate-500 mt-1">Track your favorite species for quick access</p>
+              <h2 className="text-lg font-heading font-bold text-slate-900 dark:text-white">My Watchlist</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Track your favorite species for quick access</p>
             </div>
 
             {cart.length === 0 ? (
-              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm text-center">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ShoppingCart className="w-8 h-8 text-slate-300" />
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-100 dark:border-slate-700 shadow-sm text-center">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShoppingCart className="w-8 h-8 text-slate-300 dark:text-slate-500" />
                 </div>
-                <h3 className="text-base font-bold text-slate-700 mb-2">Cart is Empty</h3>
-                <p className="text-sm text-slate-400 max-w-xs mx-auto">
+                <h3 className="text-base font-bold text-slate-700 dark:text-slate-200 mb-2">Cart is Empty</h3>
+                <p className="text-sm text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
                   Add species to your cart by tapping the + button on any species card.
                 </p>
                 <button
@@ -531,7 +531,7 @@ export const UserView: React.FC = () => {
                     <div
                       key={speciesId}
                       style={{ animationDelay: `${idx * 50}ms` }}
-                      className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all animate-fade-in group"
+                      className="w-full flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all animate-fade-in group"
                     >
                       <button
                         onClick={() => setSelectedSummary(summary)}
@@ -548,16 +548,16 @@ export const UserView: React.FC = () => {
                           />
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                          <div className="text-sm font-bold text-slate-800 dark:text-white group-hover:text-emerald-600 transition-colors">
                             {summary.species.name_en}
                           </div>
-                          <div className="text-xs text-slate-400">{summary.species.name_local}</div>
+                          <div className="text-xs text-slate-400 dark:text-slate-500">{summary.species.name_local}</div>
                         </div>
                       </button>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <div className={`text-lg font-bold ${summary.change.status === 'UP' ? 'text-emerald-600' :
-                            summary.change.status === 'DOWN' ? 'text-red-500' : 'text-slate-600'
+                          <div className={`text-lg font-bold ${summary.change.status === 'UP' ? 'text-emerald-600 dark:text-emerald-400' :
+                            summary.change.status === 'DOWN' ? 'text-red-500 dark:text-red-400' : 'text-slate-600 dark:text-slate-400'
                             }`}>
                             ₹{summary.todayRate?.price_per_kg || 'N/A'}
                           </div>
@@ -586,12 +586,12 @@ export const UserView: React.FC = () => {
         {/* --- TAB 4: INSIGHTS --- */}
         {activeTab === 'insights' && (
           <div className="animate-fade-in space-y-4">
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center mb-4">
-              <div className="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm text-center mb-4">
+              <div className="w-12 h-12 bg-yellow-50 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Sparkles className="w-6 h-6 text-yellow-500" />
               </div>
-              <h2 className="text-lg font-heading font-bold text-slate-900">{t('insights.title')}</h2>
-              <p className="text-sm text-slate-500 mt-1">{t('insights.subtitle')}</p>
+              <h2 className="text-lg font-heading font-bold text-slate-900 dark:text-white">{t('insights.title')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('insights.subtitle')}</p>
             </div>
 
             {/* Market Oracle - Premium Card Style */}
@@ -646,7 +646,7 @@ export const UserView: React.FC = () => {
       </div>
 
       {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 pb-6 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.03)] flex justify-around items-center">
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-3 pb-6 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.03)] flex justify-around items-center transition-colors duration-300">
 
         <button
           onClick={() => setActiveTab('rates')}

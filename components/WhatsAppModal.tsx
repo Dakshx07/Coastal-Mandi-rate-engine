@@ -33,8 +33,8 @@ export const WhatsAppModal: React.FC<Props> = ({ isOpen, onClose, harbourId }) =
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
-      <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl z-10 p-8 relative overflow-hidden animate-slide-up-spring">
-        <button onClick={onClose} className="absolute top-4 right-4 text-slate-300 hover:text-slate-600 transition-colors z-20">
+      <div className="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl shadow-2xl z-10 p-8 relative overflow-hidden animate-slide-up-spring">
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-300 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors z-20">
           <X className="w-5 h-5" />
         </button>
 
@@ -46,10 +46,10 @@ export const WhatsAppModal: React.FC<Props> = ({ isOpen, onClose, harbourId }) =
               </div>
             </div>
 
-            <h3 className="text-xl font-heading font-bold text-center text-slate-900 mb-2">
+            <h3 className="text-xl font-heading font-bold text-center text-slate-900 dark:text-white mb-2">
               Instant Price Alerts
             </h3>
-            <p className="text-center text-slate-500 font-medium text-xs mb-8 leading-relaxed px-4">
+            <p className="text-center text-slate-500 dark:text-slate-400 font-medium text-xs mb-8 leading-relaxed px-4">
               Get notified via WhatsApp immediately when prices fluctuate significantly in this market.
             </p>
 
@@ -58,7 +58,7 @@ export const WhatsAppModal: React.FC<Props> = ({ isOpen, onClose, harbourId }) =
                 <input
                   type="tel"
                   placeholder="Mobile Number"
-                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition-all font-bold text-center text-lg placeholder:text-slate-300 placeholder:font-medium"
+                  className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-slate-900 dark:focus:ring-blue-500 focus:border-slate-900 dark:focus:border-blue-500 outline-none transition-all font-bold text-center text-lg text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 placeholder:font-medium"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
@@ -90,8 +90,8 @@ export const WhatsAppModal: React.FC<Props> = ({ isOpen, onClose, harbourId }) =
                 <Check className="w-10 h-10 text-white stroke-[3]" />
               </div>
             </div>
-            <h3 className="text-xl font-heading font-extrabold text-slate-800">Subscribed!</h3>
-            <p className="text-slate-500 font-medium text-sm mt-2">You'll receive the next update shortly.</p>
+            <h3 className="text-xl font-heading font-extrabold text-slate-800 dark:text-white">Subscribed!</h3>
+            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-2">You'll receive the next update shortly.</p>
           </div>
         )}
       </div>

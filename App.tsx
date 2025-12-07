@@ -8,11 +8,12 @@ import { SettingsPage } from './components/SettingsPage';
 import { IntroPage } from './components/IntroPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>;
 
   if (!user) {
     return <Navigate to="/" replace />;
@@ -53,12 +54,14 @@ import { OfflineAlert } from './components/OfflineAlert';
 function App() {
   return (
     <AuthProvider>
-      <LanguageProvider>
-        <HashRouter>
-          <OfflineAlert />
-          <AppRoutes />
-        </HashRouter>
-      </LanguageProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <HashRouter>
+            <OfflineAlert />
+            <AppRoutes />
+          </HashRouter>
+        </LanguageProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }
