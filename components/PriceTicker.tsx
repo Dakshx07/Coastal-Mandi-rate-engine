@@ -25,7 +25,7 @@ export const PriceTicker: React.FC<Props> = ({ summaries }) => {
                             <span className="text-slate-400 mr-2">{displayName}:</span>
                             <span className="font-bold mr-2 text-white">₹{summary.todayRate?.price_per_kg || 'N/A'}</span>
                             {isValidChange && (
-                                <span className={`flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${summary.change.status === 'UP' ? 'bg-emerald-500/20 text-emerald-400' :
+                                <span className={`flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold animate-pulse ${summary.change.status === 'UP' ? 'bg-emerald-500/20 text-emerald-400' :
                                     summary.change.status === 'DOWN' ? 'bg-red-500/20 text-red-400' : 'text-slate-500'
                                     }`}>
                                     {summary.change.status === 'UP' ? <TrendingUp className="w-3 h-3 mr-1" /> :

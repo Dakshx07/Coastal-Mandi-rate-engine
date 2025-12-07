@@ -70,16 +70,17 @@ export const UserView: React.FC = () => {
       // Fetch rates for all species in parallel
       const computed = await Promise.all(allSpecies.map(async (sp) => {
         const rates = await getRates(selectedHarbourId, sp.id);
-        const todayRate = rates.find(r => r.date === today) || null;
-        const yesterdayRate = rates.find(r => r.date === yesterday) || null;
+        // Use latest available rate as "current" to avoid N/A when no entry for today yet
+        const latestRate = rates.length > 0 ? rates[0] : null;
+        const previousRate = rates.length > 1 ? rates[1] : null;
 
         return {
           species: sp,
-          todayRate,
-          yesterdayRate,
+          todayRate: latestRate,
+          yesterdayRate: previousRate,
           change: calculate_rate_change(
-            todayRate?.price_per_kg || 0,
-            yesterdayRate?.price_per_kg || 0
+            latestRate?.price_per_kg || 0,
+            previousRate?.price_per_kg || 0
           ),
           history: rates.slice(0, 7)
         };
