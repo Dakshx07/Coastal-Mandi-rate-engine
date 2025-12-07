@@ -50,6 +50,7 @@ function AppRoutes() {
 }
 
 import { OfflineAlert } from './components/OfflineAlert';
+import { VoiceAssistant } from './components/VoiceAssistant';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
         <LanguageProvider>
           <HashRouter>
             <OfflineAlert />
+            <VoiceAssistant />
             <AppRoutes />
           </HashRouter>
         </LanguageProvider>

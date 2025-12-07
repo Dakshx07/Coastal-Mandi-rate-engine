@@ -41,30 +41,48 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
             return;
         }
 
-        setIsProcessing(true);
-
         // Store phone number for later reference
         localStorage.setItem('coastal_mandi_premium_phone', `+91${phone}`);
 
-        setTimeout(() => {
-            // Get Razorpay payment link from environment variable
-            // You can create this link in Razorpay Dashboard -> Payment Links
-            const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK;
+        // Get Razorpay payment link from environment variable
+        const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK;
 
-            if (razorpayPaymentLink) {
-                // Redirect to Razorpay payment page
-                window.open(razorpayPaymentLink, '_blank');
-                setIsProcessing(false);
-                setSubscribed(true);
+        if (razorpayPaymentLink) {
+            // IMPORTANT: On mobile, window.open inside setTimeout gets blocked
+            // Using window.location.href for reliable mobile redirect
+            // The user will be redirected to Razorpay payment page
+
+            // Detect if mobile device
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                // On mobile, redirect in same tab for better experience
+                window.location.href = razorpayPaymentLink;
             } else {
-                // Fallback: Open WhatsApp with premium interest if no payment link configured
-                const message = `💎 *Coastal Mandi PREMIUM*\n\n🌟 I want to upgrade to Premium!\n\n📱 Phone: +91${phone}\n💳 Plan: ₹99/month\n\nPlease send me the payment link.`;
-                const whatsappUrl = `https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || ''}?text=${encodeURIComponent(message)}`;
+                // On desktop, open in new tab
+                const newWindow = window.open(razorpayPaymentLink, '_blank');
+                if (!newWindow || newWindow.closed) {
+                    // If popup was blocked, redirect in same tab
+                    window.location.href = razorpayPaymentLink;
+                } else {
+                    setIsProcessing(false);
+                    setSubscribed(true);
+                }
+            }
+        } else {
+            // Fallback: Open WhatsApp with premium interest if no payment link configured
+            const message = `💎 *Coastal Mandi PREMIUM*\n\n🌟 I want to upgrade to Premium!\n\n📱 Phone: +91${phone}\n💳 Plan: ₹99/month\n\nPlease send me the payment link.`;
+            const whatsappUrl = `https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || ''}?text=${encodeURIComponent(message)}`;
+
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                window.location.href = whatsappUrl;
+            } else {
                 window.open(whatsappUrl, '_blank');
                 setIsProcessing(false);
                 setSubscribed(true);
             }
-        }, 1000);
+        }
     };
 
     const plans = [
