@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@alan-ai/alan-sdk-web": "^1.8.98",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
     "@google/genai": "^1.30.0",
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.86.2",
