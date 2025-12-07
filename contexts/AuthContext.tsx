@@ -65,6 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       options: {
         data: {
           name: name,
+          full_name: name,
+          display_name: name,
         },
       },
     });
