@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mic, MicOff, X, Volume2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface VoiceCommand {
-    patterns: string[];
+    keywords: string[];  // Keywords that must be present
     action: () => void;
     response: string;
 }
@@ -11,6 +12,7 @@ interface VoiceCommand {
 export const VoiceAssistant: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { logout } = useAuth();
     const [isListening, setIsListening] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [transcript, setTranscript] = useState('');
@@ -18,93 +20,194 @@ export const VoiceAssistant: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const recognitionRef = useRef<any>(null);
 
-    // Define voice commands with navigation - includes single words and phrases
-    const commands: VoiceCommand[] = [
-        {
-            patterns: ['admin', 'go to admin', 'open admin', 'admin panel', 'admin page', 'show admin', 'navigate to admin'],
-            action: () => navigate('/admin'),
-            response: 'Opening Admin Panel'
-        },
-        {
-            patterns: ['home', 'go to home', 'go home', 'open home', 'home page', 'show home', 'main page', 'main', 'navigate to home'],
-            action: () => navigate('/home'),
-            response: 'Going to Home'
-        },
-        {
-            patterns: ['settings', 'setting', 'go to settings', 'open settings', 'settings page', 'show settings', 'navigate to settings', 'preferences'],
-            action: () => navigate('/settings'),
-            response: 'Opening Settings'
-        },
-        {
-            patterns: ['back', 'go back', 'previous', 'previous page', 'go previous', 'navigate back'],
-            action: () => navigate(-1),
-            response: 'Going back'
-        },
-        {
-            patterns: ['logout', 'log out', 'sign out', 'signout', 'exit', 'leave'],
-            action: () => navigate('/'),
-            response: 'Logging out'
-        },
-        {
-            patterns: ['help', 'what can you do', 'commands', 'show commands', 'options', 'what can i say'],
-            action: () => setResponse('You can say: Admin, Home, Settings, Back, Logout, Refresh, or Help'),
-            response: 'Here are the available commands'
-        },
-        {
-            patterns: ['refresh', 'reload', 'refresh page', 'reload page'],
-            action: () => window.location.reload(),
-            response: 'Refreshing the page'
-        },
-        {
-            patterns: ['subscribe', 'subscription', 'premium', 'upgrade'],
-            action: () => { navigate('/home'); setResponse('Please click on any fish card to see subscription options.'); },
-            response: 'Opening subscription options'
+    // Smart command matching - checks if any keyword is present
+    const matchCommand = useCallback((text: string): VoiceCommand | null => {
+        const lowerText = text.toLowerCase().trim();
+
+        // Define commands with flexible keyword matching
+        const commandDefinitions: VoiceCommand[] = [
+            // ADMIN - matches: "admin", "go to admin", "navigate me to admin panel", "open admin page", etc.
+            {
+                keywords: ['admin'],
+                action: () => navigate('/admin'),
+                response: 'Opening Admin Panel'
+            },
+            // HOME - matches: "home", "go home", "take me home", "navigate to home page", etc.
+            {
+                keywords: ['home', 'main page'],
+                action: () => navigate('/home'),
+                response: 'Going to Home'
+            },
+            // SETTINGS - matches: "settings", "open settings", "go to settings page", etc.
+            {
+                keywords: ['settings', 'setting', 'preferences'],
+                action: () => navigate('/settings'),
+                response: 'Opening Settings'
+            },
+            // BACK - matches: "back", "go back", "previous", "navigate back", etc.
+            {
+                keywords: ['back', 'previous'],
+                action: () => navigate(-1),
+                response: 'Going back'
+            },
+            // LOGOUT - ACTUALLY logs out
+            {
+                keywords: ['logout', 'log out', 'sign out', 'signout'],
+                action: async () => {
+                    await logout();
+                    navigate('/');
+                },
+                response: 'Signing you out. Goodbye!'
+            },
+            // HELP
+            {
+                keywords: ['help', 'commands', 'what can you do', 'options'],
+                action: () => { },
+                response: 'You can say: Admin, Home, Settings, Back, Logout, Calculator, Subscribe, Dark Mode, Light Mode, Refresh, or Help'
+            },
+            // REFRESH
+            {
+                keywords: ['refresh', 'reload'],
+                action: () => setTimeout(() => window.location.reload(), 1000),
+                response: 'Refreshing the page'
+            },
+            // CALCULATOR
+            {
+                keywords: ['calculator', 'calculate', 'catch calculator'],
+                action: () => {
+                    navigate('/home');
+                    // Trigger calculator open via custom event
+                    setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('openCalculator'));
+                    }, 500);
+                },
+                response: 'Opening Calculator'
+            },
+            // SUBSCRIBE / PREMIUM
+            {
+                keywords: ['subscribe', 'subscription', 'premium', 'upgrade', 'plan'],
+                action: () => {
+                    navigate('/home');
+                    setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('openSubscription'));
+                    }, 500);
+                },
+                response: 'Opening subscription options. Please click on any fish card to subscribe.'
+            },
+            // DARK MODE
+            {
+                keywords: ['dark mode', 'dark theme', 'night mode'],
+                action: () => {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('coastal_mandi_theme', 'dark');
+                },
+                response: 'Switching to dark mode'
+            },
+            // LIGHT MODE
+            {
+                keywords: ['light mode', 'light theme', 'day mode'],
+                action: () => {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('coastal_mandi_theme', 'light');
+                },
+                response: 'Switching to light mode'
+            },
+            // SCROLL UP
+            {
+                keywords: ['scroll up', 'go up', 'top'],
+                action: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+                response: 'Scrolling to top'
+            },
+            // SCROLL DOWN
+            {
+                keywords: ['scroll down', 'go down', 'bottom'],
+                action: () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }),
+                response: 'Scrolling down'
+            },
+            // WHERE AM I
+            {
+                keywords: ['where am i', 'current page', 'which page'],
+                action: () => { },
+                response: `You are on the ${location.pathname.replace('/', '') || 'home'} page`
+            },
+            // THANK YOU / GOODBYE
+            {
+                keywords: ['thank you', 'thanks', 'goodbye', 'bye'],
+                action: () => setIsExpanded(false),
+                response: 'You\'re welcome! Happy fishing!'
+            },
+            // HELLO / HI
+            {
+                keywords: ['hello', 'hi', 'hey'],
+                action: () => { },
+                response: 'Hello! I\'m your Coastal Mandi assistant. How can I help you today?'
+            }
+        ];
+
+        // Check each command for keyword match
+        for (const command of commandDefinitions) {
+            for (const keyword of command.keywords) {
+                if (lowerText.includes(keyword)) {
+                    return command;
+                }
+            }
         }
-    ];
+
+        return null;
+    }, [navigate, logout, location.pathname]);
 
     // Speak the response using Text-to-Speech
     const speak = useCallback((text: string) => {
         if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 1;
             utterance.pitch = 1;
             utterance.volume = 0.8;
-            // Try to use a female voice
+
+            // Try to use a good voice
             const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Google'));
+            const preferredVoice = voices.find(v =>
+                v.name.includes('Samantha') ||
+                v.name.includes('Google') ||
+                v.name.includes('Female') ||
+                v.lang.includes('en')
+            );
             if (preferredVoice) utterance.voice = preferredVoice;
+
             window.speechSynthesis.speak(utterance);
         }
     }, []);
 
     // Process the voice command
     const processCommand = useCallback((text: string) => {
-        const lowerText = text.toLowerCase().trim();
+        const command = matchCommand(text);
 
-        for (const command of commands) {
-            for (const pattern of command.patterns) {
-                if (lowerText.includes(pattern)) {
-                    setResponse(command.response);
-                    speak(command.response);
-                    setTimeout(() => {
-                        command.action();
-                    }, 500);
-                    return true;
-                }
-            }
+        if (command) {
+            setResponse(command.response);
+            speak(command.response);
+
+            // Execute the action after a short delay for smooth UX
+            setTimeout(() => {
+                command.action();
+            }, 300);
+            return true;
         }
 
-        // No matching command
-        const notFoundMsg = `Sorry, I didn't understand "${text}". Say "Help" for available commands.`;
+        // No matching command - give helpful response
+        const notFoundMsg = `I heard "${text}". Try saying "Admin", "Home", "Settings", or "Help" for more options.`;
         setResponse(notFoundMsg);
         speak(notFoundMsg);
         return false;
-    }, [commands, speak, navigate]);
+    }, [matchCommand, speak]);
 
     // Start listening
     const startListening = useCallback(() => {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            setError('Voice input not supported in this browser. Please use Chrome.');
+            setError('Voice input not supported. Please use Chrome.');
+            speak('Voice input is not supported in this browser. Please use Chrome.');
             return;
         }
 
@@ -113,7 +216,7 @@ export const VoiceAssistant: React.FC = () => {
 
         recognition.continuous = false;
         recognition.interimResults = true;
-        recognition.lang = 'en-IN'; // Optimized for Indian English
+        recognition.lang = 'en-IN';
 
         recognition.onstart = () => {
             setIsListening(true);
@@ -147,8 +250,10 @@ export const VoiceAssistant: React.FC = () => {
             console.error('Speech recognition error', event.error);
             if (event.error === 'no-speech') {
                 setError('No speech detected. Please try again.');
+                speak('I couldn\'t hear you. Please try again.');
             } else if (event.error === 'not-allowed') {
-                setError('Microphone access denied. Please allow microphone access.');
+                setError('Microphone access denied.');
+                speak('Please allow microphone access to use voice commands.');
             } else {
                 setError('Could not hear you. Try again.');
             }
@@ -161,7 +266,7 @@ export const VoiceAssistant: React.FC = () => {
 
         recognitionRef.current = recognition;
         recognition.start();
-    }, [processCommand]);
+    }, [processCommand, speak]);
 
     // Stop listening
     const stopListening = useCallback(() => {
@@ -193,11 +298,11 @@ export const VoiceAssistant: React.FC = () => {
     // Greet on first expand
     useEffect(() => {
         if (isExpanded && !isListening && !transcript && !response) {
-            const greeting = 'Hi! I\'m your voice assistant. How can I help you?';
+            const greeting = 'Hi! I\'m your Coastal Mandi assistant. How can I help you?';
             setResponse(greeting);
             speak(greeting);
         }
-    }, [isExpanded]);
+    }, [isExpanded, isListening, transcript, response, speak]);
 
     return (
         <>
@@ -205,10 +310,10 @@ export const VoiceAssistant: React.FC = () => {
             <button
                 onClick={toggleListening}
                 className={`fixed bottom-24 right-4 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 ${isListening
-                    ? 'bg-red-500 animate-pulse shadow-red-500/50'
-                    : 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/30'
+                        ? 'bg-red-500 animate-pulse shadow-red-500/50'
+                        : 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/30'
                     }`}
-                title="Voice Assistant"
+                title="Voice Assistant - Click to speak"
             >
                 {isListening ? (
                     <MicOff className="w-6 h-6 text-white" />
@@ -233,7 +338,7 @@ export const VoiceAssistant: React.FC = () => {
                                 <div>
                                     <h3 className="text-white font-bold">Voice Assistant</h3>
                                     <p className="text-white/70 text-xs">
-                                        {isListening ? 'Listening...' : 'Tap mic to speak'}
+                                        {isListening ? '🎤 Listening...' : 'Tap mic to speak'}
                                     </p>
                                 </div>
                             </div>
@@ -275,8 +380,8 @@ export const VoiceAssistant: React.FC = () => {
                                 <button
                                     onClick={toggleListening}
                                     className={`w-16 h-16 rounded-full flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 ${isListening
-                                        ? 'bg-red-500 shadow-lg shadow-red-500/30 animate-pulse'
-                                        : 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30'
+                                            ? 'bg-red-500 shadow-lg shadow-red-500/30 animate-pulse'
+                                            : 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30'
                                         }`}
                                 >
                                     {isListening ? (
@@ -291,7 +396,7 @@ export const VoiceAssistant: React.FC = () => {
                             <div className="pt-2">
                                 <p className="text-xs text-slate-400 dark:text-slate-500 font-bold text-center mb-2">Try saying:</p>
                                 <div className="flex flex-wrap justify-center gap-2">
-                                    {['Admin', 'Home', 'Settings', 'Back', 'Help'].map((cmd) => (
+                                    {['Admin', 'Home', 'Settings', 'Dark Mode', 'Logout', 'Help'].map((cmd) => (
                                         <span
                                             key={cmd}
                                             className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full font-bold"
