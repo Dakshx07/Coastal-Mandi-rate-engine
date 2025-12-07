@@ -15,6 +15,7 @@ import { WhatsAppModal } from './WhatsAppModal';
 import { QuickCompare } from './QuickCompare';
 import { CatchCalculator } from './CatchCalculator';
 import { PriceTicker } from './PriceTicker';
+import { SubscriptionModal } from './SubscriptionModal';
 import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera, Clock, ChevronRight, ShoppingCart, Plus, Check, Trash2 } from 'lucide-react';
 
 type Tab = 'rates' | 'cart' | 'compare' | 'insights';
@@ -44,6 +45,7 @@ export const UserView: React.FC = () => {
   // Modal States
   const [selectedSummary, setSelectedSummary] = useState<DailyRateSummary | null>(null);
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
+  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isGraderOpen, setIsGraderOpen] = useState(false);
@@ -327,8 +329,8 @@ export const UserView: React.FC = () => {
                                   setSearchTerm('');
                                 }}
                                 className={`p-3 rounded-xl text-left transition-all ${result.rate
-                                    ? 'bg-white hover:shadow-md border border-slate-100'
-                                    : 'bg-slate-50 border border-slate-100'
+                                  ? 'bg-white hover:shadow-md border border-slate-100'
+                                  : 'bg-slate-50 border border-slate-100'
                                   }`}
                               >
                                 <div className="text-[10px] font-bold text-purple-600 uppercase tracking-wider truncate">
@@ -340,7 +342,7 @@ export const UserView: React.FC = () => {
                                       ₹{result.rate.price_per_kg}
                                     </span>
                                     <span className={`text-[10px] font-bold ${result.change.status === 'UP' ? 'text-emerald-500' :
-                                        result.change.status === 'DOWN' ? 'text-red-500' : 'text-slate-400'
+                                      result.change.status === 'DOWN' ? 'text-red-500' : 'text-slate-400'
                                       }`}>
                                       {result.change.status === 'UP' ? '↑' : result.change.status === 'DOWN' ? '↓' : '—'}
                                       {result.change.percentDiff > 0 ? ` ${result.change.percentDiff.toFixed(0)}%` : ''}
@@ -443,19 +445,22 @@ export const UserView: React.FC = () => {
             {/* Subscribe Button */}
             <div className="pt-6 pb-4">
               <button
-                onClick={() => setIsWhatsAppOpen(true)}
-                className="btn-shine bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-white w-full py-4 rounded-2xl shadow-lg flex items-center justify-between px-6 transition-all hover:-translate-y-1 active:scale-[0.98]"
+                onClick={() => setIsSubscriptionOpen(true)}
+                className="btn-shine bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-400 text-white w-full py-4 rounded-2xl shadow-lg flex items-center justify-between px-6 transition-all hover:-translate-y-1 active:scale-[0.98]"
               >
                 <div className="flex items-center">
-                  <div className="p-2 bg-green-500/20 rounded-lg mr-4 border border-green-500/10">
-                    <MessageCircle className="w-6 h-6 text-green-400" />
+                  <div className="p-2 bg-white/20 rounded-lg mr-4 backdrop-blur-sm">
+                    <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('rates.alerts')}</div>
-                    <div className="text-base font-bold">{t('rates.subscribe')}</div>
+                    <div className="text-[10px] font-bold text-white/70 uppercase tracking-wider">Get Price Alerts</div>
+                    <div className="text-base font-bold">Subscribe Now</div>
                   </div>
                 </div>
-                <Bell className="w-5 h-5 text-slate-400" />
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-1 bg-white/20 rounded-full text-[10px] font-bold">FREE</span>
+                  <Bell className="w-5 h-5 text-white/80" />
+                </div>
               </button>
             </div>
           </div>
@@ -699,6 +704,12 @@ export const UserView: React.FC = () => {
         isOpen={isWhatsAppOpen}
         onClose={() => setIsWhatsAppOpen(false)}
         harbourId={selectedHarbourId}
+      />
+
+      <SubscriptionModal
+        isOpen={isSubscriptionOpen}
+        onClose={() => setIsSubscriptionOpen(false)}
+        harbourName={harbours.find(h => h.id === selectedHarbourId)?.name}
       />
 
       <CatchCalculator

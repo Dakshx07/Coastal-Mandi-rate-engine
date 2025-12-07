@@ -105,7 +105,33 @@ export const DetailModal: React.FC<Props> = ({ summary, onClose }) => {
           <button
             onClick={() => {
               const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '';
-              const text = `🐟 *Fresh Catch Alert - ${summary.species.name_en}*\n\n📍 Location: Malpe Harbour\n💰 Rate: ₹${summary.todayRate?.price_per_kg}/kg\n✨ Quality: Premium Grade\n\n_Sent via Coastal Mandi App_`;
+              const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+              const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+              const trendText = summary.change.status === 'UP'
+                ? `⬆️ +${summary.change.percentDiff.toFixed(1)}% from yesterday`
+                : summary.change.status === 'DOWN'
+                  ? `⬇️ ${summary.change.percentDiff.toFixed(1)}% from yesterday`
+                  : '➡️ Same as yesterday';
+
+              const text = `📊 *MARKET RATE UPDATE*
+
+🐟 *${summary.species.name_en}*
+_(${summary.species.name_local})_
+
+┌─────────────────────┐
+│ 💵 *₹${summary.todayRate?.price_per_kg}/kg*
+│ 📍 Coastal Mandi
+│ 📅 ${date}
+│ ⏰ ${time}
+└─────────────────────┘
+
+${trendText}
+
+✅ Fresh Stock Available
+📞 Contact for bulk orders
+
+_via Coastal Mandi App_ 🌊`;
+
               const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
               window.open(url, '_blank');
             }}
