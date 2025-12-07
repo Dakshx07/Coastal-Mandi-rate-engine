@@ -15,9 +15,9 @@ import { WhatsAppModal } from './WhatsAppModal';
 import { QuickCompare } from './QuickCompare';
 import { CatchCalculator } from './CatchCalculator';
 import { PriceTicker } from './PriceTicker';
-import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera, Clock, ChevronRight } from 'lucide-react';
+import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera, Clock, ChevronRight, ShoppingCart, Plus, Check, Trash2 } from 'lucide-react';
 
-type Tab = 'rates' | 'history' | 'compare' | 'insights';
+type Tab = 'rates' | 'cart' | 'compare' | 'insights';
 
 export const UserView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('rates');
@@ -26,6 +26,16 @@ export const UserView: React.FC = () => {
   const [summaries, setSummaries] = useState<DailyRateSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Cross-harbour search results
+  interface CrossHarbourResult {
+    harbour: Harbour;
+    species: import('../types').Species;
+    rate: import('../types').Rate | null;
+    change: import('../types').RateChangeResult;
+  }
+  const [crossHarbourResults, setCrossHarbourResults] = useState<CrossHarbourResult[]>([]);
+  const [isSearchingCrossHarbour, setIsSearchingCrossHarbour] = useState(false);
 
   // Auth & Language
   const { user } = useAuth();
@@ -38,10 +48,10 @@ export const UserView: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isGraderOpen, setIsGraderOpen] = useState(false);
 
-  // Recently Viewed State (persisted to localStorage)
-  const [recentlyViewed, setRecentlyViewed] = useState<string[]>(() => {
+  // Cart/Watchlist State (persisted to localStorage)
+  const [cart, setCart] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem('coastal_mandi_recently_viewed');
+      const saved = localStorage.getItem('coastal_mandi_cart');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -52,15 +62,20 @@ export const UserView: React.FC = () => {
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  // Function to add species to recently viewed
-  const addToRecentlyViewed = (speciesId: string) => {
-    setRecentlyViewed(prev => {
-      const filtered = prev.filter(id => id !== speciesId);
-      const updated = [speciesId, ...filtered].slice(0, 5); // Keep max 5
-      localStorage.setItem('coastal_mandi_recently_viewed', JSON.stringify(updated));
+  // Function to toggle species in cart
+  const toggleCart = (speciesId: string) => {
+    setCart(prev => {
+      const isInCart = prev.includes(speciesId);
+      const updated = isInCart
+        ? prev.filter(id => id !== speciesId)
+        : [...prev, speciesId].slice(0, 10); // Keep max 10
+      localStorage.setItem('coastal_mandi_cart', JSON.stringify(updated));
       return updated;
     });
   };
+
+  // Check if species is in cart
+  const isInCart = (speciesId: string) => cart.includes(speciesId);
 
   useEffect(() => {
     const loadHarbours = async () => {
@@ -115,6 +130,62 @@ export const UserView: React.FC = () => {
     fetchData();
 
   }, [selectedHarbourId]);
+
+  // Cross-harbour search effect
+  useEffect(() => {
+    if (searchTerm.length < 2) {
+      setCrossHarbourResults([]);
+      return;
+    }
+
+    const searchCrossHarbour = async () => {
+      setIsSearchingCrossHarbour(true);
+
+      // Find matching species
+      const allSpecies = await getSpecies();
+      const matchingSpecies = allSpecies.filter(sp =>
+        sp.name_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sp.name_local.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      if (matchingSpecies.length === 0) {
+        setCrossHarbourResults([]);
+        setIsSearchingCrossHarbour(false);
+        return;
+      }
+
+      // For each matching species, get rates from all harbours
+      const results: CrossHarbourResult[] = [];
+
+      for (const species of matchingSpecies.slice(0, 3)) { // Limit to 3 species
+        for (const harbour of harbours) {
+          const rates = await getRates(harbour.id, species.id);
+          const latestRate = rates.length > 0 ? rates[0] : null;
+          const previousRate = rates.length > 1 ? rates[1] : null;
+
+          results.push({
+            harbour,
+            species,
+            rate: latestRate,
+            change: calculate_rate_change(
+              latestRate?.price_per_kg || 0,
+              previousRate?.price_per_kg || 0
+            )
+          });
+        }
+      }
+
+      // Sort by price (highest first)
+      results.sort((a, b) => (b.rate?.price_per_kg || 0) - (a.rate?.price_per_kg || 0));
+
+      setCrossHarbourResults(results);
+      setIsSearchingCrossHarbour(false);
+    };
+
+    // Debounce search
+    const timer = setTimeout(searchCrossHarbour, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm, harbours]);
 
   const handleGenerateInsight = async () => {
     setIsAiLoading(true);
@@ -218,44 +289,117 @@ export const UserView: React.FC = () => {
               />
             </div>
 
-            {/* Quick Recently Viewed Preview */}
-            {recentlyViewed.length > 0 && (
+            {/* Cross-Harbour Search Results */}
+            {searchTerm.length >= 2 && (
+              <div className="mb-6 animate-fade-in">
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 text-purple-500 mr-2" />
+                    <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                      Prices Across All Harbours
+                    </h3>
+                  </div>
+                  {isSearchingCrossHarbour && (
+                    <RefreshCw className="w-4 h-4 text-purple-500 animate-spin" />
+                  )}
+                </div>
+
+                {crossHarbourResults.length > 0 ? (
+                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-4 border border-purple-100">
+                    {/* Group by species */}
+                    {Array.from(new Set(crossHarbourResults.map(r => r.species.id))).map(speciesId => {
+                      const speciesResults = crossHarbourResults.filter(r => r.species.id === speciesId);
+                      const species = speciesResults[0]?.species;
+                      if (!species) return null;
+
+                      return (
+                        <div key={speciesId} className="mb-4 last:mb-0">
+                          <h4 className="text-sm font-bold text-slate-800 mb-2 flex items-center">
+                            🐟 {species.name_en}
+                            <span className="text-xs text-slate-400 ml-2 font-normal">({species.name_local})</span>
+                          </h4>
+                          <div className="grid grid-cols-2 gap-2">
+                            {speciesResults.map((result, idx) => (
+                              <button
+                                key={`${result.harbour.id}-${idx}`}
+                                onClick={() => {
+                                  setSelectedHarbourId(result.harbour.id);
+                                  setSearchTerm('');
+                                }}
+                                className={`p-3 rounded-xl text-left transition-all ${result.rate
+                                    ? 'bg-white hover:shadow-md border border-slate-100'
+                                    : 'bg-slate-50 border border-slate-100'
+                                  }`}
+                              >
+                                <div className="text-[10px] font-bold text-purple-600 uppercase tracking-wider truncate">
+                                  {result.harbour.name}
+                                </div>
+                                {result.rate ? (
+                                  <div className="flex items-center justify-between mt-1">
+                                    <span className="text-base font-bold text-slate-800">
+                                      ₹{result.rate.price_per_kg}
+                                    </span>
+                                    <span className={`text-[10px] font-bold ${result.change.status === 'UP' ? 'text-emerald-500' :
+                                        result.change.status === 'DOWN' ? 'text-red-500' : 'text-slate-400'
+                                      }`}>
+                                      {result.change.status === 'UP' ? '↑' : result.change.status === 'DOWN' ? '↓' : '—'}
+                                      {result.change.percentDiff > 0 ? ` ${result.change.percentDiff.toFixed(0)}%` : ''}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="text-xs text-slate-400 mt-1">No data</div>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : !isSearchingCrossHarbour && (
+                  <div className="text-center py-4 text-sm text-slate-400">
+                    No rates found for "{searchTerm}" across harbours
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* My Cart Quick Preview */}
+            {cart.length > 0 && (
               <div className="mb-4 animate-fade-in">
                 <div className="flex items-center justify-between mb-2 px-1">
                   <div className="flex items-center">
-                    <Clock className="w-3 h-3 text-orange-400 mr-1.5" />
-                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recent</h3>
+                    <ShoppingCart className="w-3 h-3 text-emerald-500 mr-1.5" />
+                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">My Cart</h3>
                   </div>
                   <button
-                    onClick={() => setActiveTab('history')}
-                    className="text-[10px] text-orange-500 hover:text-orange-600 font-bold transition-colors flex items-center gap-0.5"
+                    onClick={() => setActiveTab('cart')}
+                    className="text-[10px] text-emerald-500 hover:text-emerald-600 font-bold transition-colors flex items-center gap-0.5"
                   >
-                    See All <ChevronRight className="w-3 h-3" />
+                    View All <ChevronRight className="w-3 h-3" />
                   </button>
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
-                  {recentlyViewed.slice(0, 3).map((speciesId) => {
+                  {cart.slice(0, 3).map((speciesId) => {
                     const summary = summaries.find(s => s.species.id === speciesId);
                     if (!summary) return null;
                     return (
                       <button
                         key={speciesId}
-                        onClick={() => {
-                          addToRecentlyViewed(speciesId);
-                          setSelectedSummary(summary);
-                        }}
-                        className="flex-shrink-0 bg-orange-50 hover:bg-orange-100 rounded-lg px-3 py-1.5 border border-orange-100 transition-all text-xs font-bold text-orange-700"
+                        onClick={() => setSelectedSummary(summary)}
+                        className="flex-shrink-0 bg-emerald-50 hover:bg-emerald-100 rounded-lg px-3 py-1.5 border border-emerald-100 transition-all text-xs font-bold text-emerald-700 flex items-center gap-1"
                       >
+                        <Check className="w-3 h-3" />
                         {summary.species.name_en}
                       </button>
                     );
                   })}
-                  {recentlyViewed.length > 3 && (
+                  {cart.length > 3 && (
                     <button
-                      onClick={() => setActiveTab('history')}
+                      onClick={() => setActiveTab('cart')}
                       className="flex-shrink-0 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-all text-xs font-bold text-slate-500"
                     >
-                      +{recentlyViewed.length - 3} more
+                      +{cart.length - 3} more
                     </button>
                   )}
                 </div>
@@ -288,10 +432,9 @@ export const UserView: React.FC = () => {
                   <div key={summary.species.id} style={{ animationDelay: `${idx * 50}ms` }} className="animate-fade-in">
                     <SpeciesCard
                       summary={summary}
-                      onClick={() => {
-                        addToRecentlyViewed(summary.species.id);
-                        setSelectedSummary(summary);
-                      }}
+                      onClick={() => setSelectedSummary(summary)}
+                      isInCart={isInCart(summary.species.id)}
+                      onCartToggle={() => toggleCart(summary.species.id)}
                     />
                   </div>
                 ))
@@ -332,29 +475,29 @@ export const UserView: React.FC = () => {
           </div>
         )}
 
-        {/* --- TAB 3: HISTORY --- */}
-        {activeTab === 'history' && (
+        {/* --- TAB 3: CART --- */}
+        {activeTab === 'cart' && (
           <div className="animate-fade-in space-y-4">
             <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center mb-4">
-              <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Clock className="w-6 h-6 text-orange-500" />
+              <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                <ShoppingCart className="w-6 h-6 text-emerald-500" />
               </div>
-              <h2 className="text-lg font-heading font-bold text-slate-900">Recently Viewed</h2>
-              <p className="text-sm text-slate-500 mt-1">Your browsing history for quick access</p>
+              <h2 className="text-lg font-heading font-bold text-slate-900">My Watchlist</h2>
+              <p className="text-sm text-slate-500 mt-1">Track your favorite species for quick access</p>
             </div>
 
-            {recentlyViewed.length === 0 ? (
+            {cart.length === 0 ? (
               <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm text-center">
                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Clock className="w-8 h-8 text-slate-300" />
+                  <ShoppingCart className="w-8 h-8 text-slate-300" />
                 </div>
-                <h3 className="text-base font-bold text-slate-700 mb-2">No History Yet</h3>
+                <h3 className="text-base font-bold text-slate-700 mb-2">Cart is Empty</h3>
                 <p className="text-sm text-slate-400 max-w-xs mx-auto">
-                  Start exploring fish rates to build your browsing history. Tap on any species to view details.
+                  Add species to your cart by tapping the + button on any species card.
                 </p>
                 <button
                   onClick={() => setActiveTab('rates')}
-                  className="mt-4 px-6 py-2 bg-orange-500 text-white text-sm font-bold rounded-xl hover:bg-orange-600 transition-colors"
+                  className="mt-4 px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-colors"
                 >
                   Browse Rates
                 </button>
@@ -365,32 +508,31 @@ export const UserView: React.FC = () => {
                 <div className="flex justify-end">
                   <button
                     onClick={() => {
-                      setRecentlyViewed([]);
-                      localStorage.removeItem('coastal_mandi_recently_viewed');
+                      setCart([]);
+                      localStorage.removeItem('coastal_mandi_cart');
                     }}
                     className="text-xs text-slate-400 hover:text-red-500 font-bold transition-colors flex items-center gap-1"
                   >
-                    <X className="w-3 h-3" />
+                    <Trash2 className="w-3 h-3" />
                     Clear All
                   </button>
                 </div>
 
-                {/* History Cards */}
-                {recentlyViewed.map((speciesId, idx) => {
+                {/* Cart Cards */}
+                {cart.map((speciesId, idx) => {
                   const summary = summaries.find(s => s.species.id === speciesId);
                   if (!summary) return null;
                   return (
-                    <button
+                    <div
                       key={speciesId}
-                      onClick={() => {
-                        addToRecentlyViewed(speciesId);
-                        setSelectedSummary(summary);
-                      }}
                       style={{ animationDelay: `${idx * 50}ms` }}
-                      className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all animate-fade-in group"
+                      className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all animate-fade-in group"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center overflow-hidden">
+                      <button
+                        onClick={() => setSelectedSummary(summary)}
+                        className="flex items-center gap-4 flex-1 text-left"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center overflow-hidden">
                           <img
                             src={summary.species.image_url}
                             alt={summary.species.name_en}
@@ -400,27 +542,35 @@ export const UserView: React.FC = () => {
                             }}
                           />
                         </div>
-                        <div className="text-left">
-                          <div className="text-sm font-bold text-slate-800 group-hover:text-orange-600 transition-colors">
+                        <div>
+                          <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
                             {summary.species.name_en}
                           </div>
                           <div className="text-xs text-slate-400">{summary.species.name_local}</div>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`text-lg font-bold ${summary.change.status === 'UP' ? 'text-emerald-600' :
-                          summary.change.status === 'DOWN' ? 'text-red-500' : 'text-slate-600'
-                          }`}>
-                          ₹{summary.todayRate?.price_per_kg || 'N/A'}
-                        </div>
-                        {summary.change.status !== 'SAME' && (
-                          <div className={`text-xs font-bold ${summary.change.status === 'UP' ? 'text-emerald-500' : 'text-red-400'
+                      </button>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className={`text-lg font-bold ${summary.change.status === 'UP' ? 'text-emerald-600' :
+                            summary.change.status === 'DOWN' ? 'text-red-500' : 'text-slate-600'
                             }`}>
-                            {summary.change.status === 'UP' ? '↑' : '↓'} {summary.change.percentDiff.toFixed(1)}%
+                            ₹{summary.todayRate?.price_per_kg || 'N/A'}
                           </div>
-                        )}
+                          {summary.change.status !== 'SAME' && (
+                            <div className={`text-xs font-bold ${summary.change.status === 'UP' ? 'text-emerald-500' : 'text-red-400'
+                              }`}>
+                              {summary.change.status === 'UP' ? '↑' : '↓'} {summary.change.percentDiff.toFixed(1)}%
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => toggleCart(speciesId)}
+                          className="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -514,18 +664,18 @@ export const UserView: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setActiveTab('history')}
-          className={`flex flex-col items-center space-y-1 transition-all duration-300 ${activeTab === 'history' ? 'text-orange-600 scale-110' : 'text-slate-400 hover:text-slate-600'}`}
+          onClick={() => setActiveTab('cart')}
+          className={`flex flex-col items-center space-y-1 transition-all duration-300 ${activeTab === 'cart' ? 'text-emerald-600 scale-110' : 'text-slate-400 hover:text-slate-600'}`}
         >
-          <div className={`p-1.5 rounded-xl relative ${activeTab === 'history' ? 'bg-orange-50' : 'bg-transparent'}`}>
-            <Clock className="w-6 h-6" />
-            {recentlyViewed.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-                {recentlyViewed.length}
+          <div className={`p-1.5 rounded-xl relative ${activeTab === 'cart' ? 'bg-emerald-50' : 'bg-transparent'}`}>
+            <ShoppingCart className="w-6 h-6" />
+            {cart.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                {cart.length}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-bold">History</span>
+          <span className="text-[10px] font-bold">Cart</span>
         </button>
 
         <button

@@ -16,30 +16,56 @@ export const getMarketInsights = async (
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+    // Build detailed market data with trend analysis
     const marketDataStr = summaries.map(s => {
-      const priceStr = s.todayRate ? `₹${s.todayRate.price_per_kg}` : 'N/A';
-      return `- ${s.species.name_en} (${s.species.name_local}): Current: ${priceStr}, Status: ${s.change.description}`;
+      const priceStr = s.todayRate ? `₹${s.todayRate.price_per_kg}/kg` : 'No data';
+      const yesterdayPriceStr = s.yesterdayRate ? `₹${s.yesterdayRate.price_per_kg}/kg` : 'No prev';
+      const trendEmoji = s.change.status === 'UP' ? '📈' : s.change.status === 'DOWN' ? '📉' : '➡️';
+      const changePercent = s.change.percentDiff ? `${s.change.percentDiff > 0 ? '+' : ''}${s.change.percentDiff.toFixed(1)}%` : '0%';
+      return `- ${s.species.name_en}: Today: ${priceStr} | Yesterday: ${yesterdayPriceStr} | Change: ${changePercent} ${trendEmoji}`;
     }).join('\n');
 
+    // Calculate market summary stats
+    const validRates = summaries.filter(s => s.todayRate);
+    const upCount = summaries.filter(s => s.change.status === 'UP').length;
+    const downCount = summaries.filter(s => s.change.status === 'DOWN').length;
+    const avgChange = summaries.reduce((acc, s) => acc + (s.change.percentDiff || 0), 0) / summaries.length;
+
     const prompt = `
-      Role: Expert Market Analyst for ${harbourName} Fish Market.
-      Current Time: ${new Date().toLocaleString()} (Vary your response based on this specific moment).
+      You are a REAL-TIME fish market analyst specifically for **${harbourName}** in India.
       
-      Data:
+      Current Date & Time: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+      
+      ## Today's Market Data at ${harbourName}:
       ${marketDataStr}
       
-      Task: Provide a unique, non-repetitive market summary for ${harbourName}.
+      ## Market Summary:
+      - Total Species: ${summaries.length}
+      - Prices Rising: ${upCount} species
+      - Prices Falling: ${downCount} species
+      - Average Change: ${avgChange > 0 ? '+' : ''}${avgChange.toFixed(1)}%
       
-      Format:
-      1. 🌊 **Pulse**: Identify the single most interesting price movement today.
-      2. ⚓ **Action**: Give one specific piece of advice for a buyer or seller.
-      3. 🔮 **Outlook**: Predict tomorrow's volume based on today's prices.
+      ## Your Task:
+      Provide a UNIQUE analysis specific to ${harbourName} RIGHT NOW. Be actionable and specific.
       
-      Constraints:
-      - Keep it under 80 words.
-      - Be specific to the data provided.
-      - Do NOT repeat generic phrases.
-      - Use a professional but accessible tone.
+      ## Required Format (use EXACTLY this structure):
+      
+      🎯 **Market Status**: [One line: Is it a BUYER'S market or SELLER'S market today at ${harbourName}?]
+      
+      💰 **Best Buy Now**: [Name ONE specific species that is BEST VALUE to buy right now and WHY - mention the actual price]
+      
+      ⚠️ **Avoid Buying**: [Name ONE species to AVOID buying today and WHY - too expensive or price rising]
+      
+      📊 **Price Alert**: [Mention the BIGGEST price movement today with exact percentage]
+      
+      🔮 **Tomorrow's Tip**: [Give ONE specific prediction for tomorrow based on today's trends]
+      
+      ## Rules:
+      - Use ACTUAL prices from the data - be specific with ₹ amounts
+      - Each response MUST be different - use the timestamp to vary your advice
+      - Be confident and actionable - fishermen need clear guidance
+      - Keep total response under 120 words
+      - Focus on ${harbourName} specifically - don't give generic advice
     `;
 
     const result = await model.generateContent(prompt);

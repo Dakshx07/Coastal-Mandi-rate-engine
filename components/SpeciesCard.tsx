@@ -1,25 +1,27 @@
 import React from 'react';
 import { DailyRateSummary } from '../types';
-import { TrendingUp, TrendingDown, Minus, ChevronRight, ShieldCheck } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, ChevronRight, ShieldCheck, Plus, Check } from 'lucide-react';
 import { formatCurrency } from '../utils';
 
 interface Props {
   summary: DailyRateSummary;
   onClick: () => void;
+  isInCart?: boolean;
+  onCartToggle?: () => void;
 }
 
-export const SpeciesCard: React.FC<Props> = ({ summary, onClick }) => {
+export const SpeciesCard: React.FC<Props> = ({ summary, onClick, isInCart = false, onCartToggle }) => {
   const { species, todayRate, change } = summary;
 
   // Status Styling
   const isUp = change.status === 'UP';
   const isDown = change.status === 'DOWN';
-  
+
   const statusColor = isUp ? 'text-emerald-600 bg-emerald-50' : isDown ? 'text-red-500 bg-red-50' : 'text-slate-500 bg-slate-100';
   const StatusIcon = isUp ? TrendingUp : isDown ? TrendingDown : Minus;
 
   const confidenceScore = todayRate?.rate_confidence_score || 0;
-  
+
   // Confidence Ring Color
   const getConfidenceColor = (score: number) => {
     if (score >= 80) return 'text-emerald-500';
@@ -28,23 +30,23 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick }) => {
   };
 
   return (
-    <div 
-      onClick={onClick}
-      className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group relative overflow-hidden"
-    >
+    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-200 group relative overflow-hidden">
       <div className="flex items-start space-x-4">
         {/* Image Thumbnail */}
-        <div className="w-16 h-16 rounded-xl bg-slate-100 shrink-0 overflow-hidden relative shadow-inner">
-          <img 
-            src={species.image_url} 
-            alt={species.name_en} 
+        <div
+          onClick={onClick}
+          className="w-16 h-16 rounded-xl bg-slate-100 shrink-0 overflow-hidden relative shadow-inner cursor-pointer"
+        >
+          <img
+            src={species.image_url}
+            alt={species.name_en}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             loading="lazy"
           />
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 cursor-pointer" onClick={onClick}>
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-base font-heading font-bold text-slate-800 leading-tight truncate">
@@ -54,15 +56,15 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick }) => {
                 {species.name_local}
               </p>
             </div>
-            
+
             {/* Price Block */}
             <div className="text-right">
               {todayRate ? (
                 <div className="flex flex-col items-end">
-                   <span className="text-lg font-bold text-slate-900 leading-none tracking-tight">
+                  <span className="text-lg font-bold text-slate-900 leading-none tracking-tight">
                     {formatCurrency(todayRate.price_per_kg)}
-                   </span>
-                   <span className="text-[10px] text-slate-400 font-semibold mt-1">/kg</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-semibold mt-1">/kg</span>
                 </div>
               ) : (
                 <span className="text-xs text-slate-400 font-medium italic">No Data</span>
@@ -89,6 +91,22 @@ export const SpeciesCard: React.FC<Props> = ({ summary, onClick }) => {
             </div>
           </div>
         </div>
+
+        {/* Add to Cart Button */}
+        {onCartToggle && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onCartToggle();
+            }}
+            className={`p-2 rounded-xl transition-all duration-200 flex-shrink-0 ${isInCart
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-105'
+                : 'bg-slate-100 text-slate-400 hover:bg-emerald-50 hover:text-emerald-500'
+              }`}
+          >
+            {isInCart ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          </button>
+        )}
       </div>
     </div>
   );
