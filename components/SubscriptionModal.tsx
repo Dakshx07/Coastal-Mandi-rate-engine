@@ -46,9 +46,9 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
 
         // Get Razorpay payment link from environment variable
         const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK;
-        
+
         // DEBUG: Check if link is loaded
-        // alert(`Link: ${razorpayPaymentLink || 'NOT FOUND'}`);
+        alert(`Debug Link: ${razorpayPaymentLink || 'NOT FOUND'}`);
 
         if (razorpayPaymentLink && razorpayPaymentLink.length > 5) {
             // IMPORTANT: On mobile, window.open inside setTimeout gets blocked
@@ -59,17 +59,8 @@ export const SubscriptionModal: React.FC<Props> = ({ isOpen, onClose, harbourNam
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // On mobile, use a hidden anchor tag to trigger navigation
-                // This is more reliable than window.location.href for deep links and WebViews
-                const link = document.createElement('a');
-                link.href = razorpayPaymentLink;
-                // Use _system target for Capacitor/Cordova apps to open in system browser
-                // For regular mobile browsers, this behaves like _blank or _self depending on settings
-                link.target = '_system';
-                link.rel = 'noopener noreferrer';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // On mobile, direct assignment is often most reliable
+                window.location.href = razorpayPaymentLink;
             } else {
                 // On desktop, open in new tab
                 const newWindow = window.open(razorpayPaymentLink, '_blank');
