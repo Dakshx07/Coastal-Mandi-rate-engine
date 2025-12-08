@@ -3,13 +3,17 @@ import { getHarbours, getSpecies, addRate, getRates, updateRateById, getSubscrib
 import { Harbour, Species, Rate, VerificationLevel, Subscriber } from '../types';
 import { getRelativeDate, parseCSV, shouldTriggerNotification, check_abnormal_change, formatCurrency, calculateConfidenceScore } from '../utils';
 import { Save, CheckCircle, ArrowLeft, Upload, FileText, History, Edit2, AlertCircle, BellRing, ShieldCheck, AlertTriangle, Mic, MicOff, ChevronDown, Users, Send, Plus, Settings } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useVoiceInput } from '../hooks/useVoiceInput';
 
 type Tab = 'single' | 'bulk' | 'history' | 'manage';
 
 export const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('single');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    // Check if a tab was passed via navigation state
+    return (location.state as any)?.tab || 'single';
+  });
   const [harbours, setHarbours] = useState<Harbour[]>([]);
   const [species, setSpecies] = useState<Species[]>([]);
   const [recentRates, setRecentRates] = useState<Rate[]>([]);

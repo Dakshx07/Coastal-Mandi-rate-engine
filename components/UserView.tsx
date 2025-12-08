@@ -60,6 +60,21 @@ export const UserView: React.FC = () => {
     }
   });
 
+  // Listen for external cart updates (e.g. from Voice Assistant)
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      try {
+        const saved = localStorage.getItem('coastal_mandi_cart');
+        if (saved) setCart(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to sync cart', e);
+      }
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, []);
+
   // AI Insight State
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
