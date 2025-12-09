@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mic, X, Sparkles, Activity, ShoppingCart } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { getSpecies, getRates } from '../services/storageService';
 import { Species, Rate } from '../types';
 
@@ -40,6 +41,7 @@ export const VoiceAssistant: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { logout } = useAuth();
+    const { t } = useLanguage();
     const [isListening, setIsListening] = useState(false);
     const [isActive, setIsActive] = useState(false); // Controls visibility of the bar
     const [transcript, setTranscript] = useState('');
@@ -341,6 +343,11 @@ export const VoiceAssistant: React.FC = () => {
         startListening();
     };
 
+    // Hide on Intro/Auth pages
+    if (['/', '/login', '/signup'].includes(location.pathname)) {
+        return null;
+    }
+
     return (
         <>
             {/* Main Trigger Button - Always Visible when inactive */}
@@ -379,10 +386,10 @@ export const VoiceAssistant: React.FC = () => {
                     {/* Text Content */}
                     <div className="flex-1 min-w-0 flex flex-col justify-center cursor-pointer" onClick={handleManualListen}>
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
-                            {isListening ? 'Listening...' : 'Tap Mic to Speak'}
+                            {isListening ? t('voice.listening') : t('voice.tap_to_speak')}
                         </p>
                         <p className="text-sm font-medium text-white truncate">
-                            {response || transcript || "Say 'Add Seer to Cart'"}
+                            {response || transcript || t('voice.hint')}
                         </p>
                     </div>
 

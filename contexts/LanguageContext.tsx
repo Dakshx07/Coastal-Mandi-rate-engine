@@ -200,6 +200,202 @@ const translations: Translations = {
         hi: 'मंदी',
         ml: 'ഇടിവ്',
         kn: 'ಇಳಿಕೆ'
+    },
+    // --- CART & CHECKOUT ---
+    'cart.title': {
+        en: 'Your Order',
+        hi: 'आपका ऑर्डर',
+        ml: 'നിങ്ങളുടെ ഓർഡർ',
+        kn: 'ನಿಮ್ಮ ಆರ್ಡರ್'
+    },
+    'cart.clear': {
+        en: 'Clear All',
+        hi: 'सभी हटाएं',
+        ml: 'എല്ലാം മായ്ക്കുക',
+        kn: 'ಎಲ್ಲವನ್ನೂ ಅಳಿಸಿ'
+    },
+    'cart.send_whatsapp': {
+        en: 'Send Order via WhatsApp',
+        hi: 'व्हाट्सएप पर ऑर्डर भेजें',
+        ml: 'വാട്ട്‌സ്ആപ്പിൽ ഓർഡർ അയക്കുക',
+        kn: 'ವಾಟ್ಸಾಪ್ ಮೂಲಕ ಆರ್ಡರ್ ಕಳುಹಿಸಿ'
+    },
+    'cart.empty_title': {
+        en: 'Cart is Empty',
+        hi: 'कार्ट खाली है',
+        ml: 'കാർട്ട് ശൂന്യമാണ്',
+        kn: 'ಕಾರ್ಟ್ ಖಾಲಿಯಾಗಿದೆ'
+    },
+    'cart.empty_desc': {
+        en: 'Add species to your cart by tapping the + button on any species card.',
+        hi: 'किसी भी प्रजाति कार्ड पर + बटन दबाकर अपनी कार्ट में प्रजातियां जोड़ें।',
+        ml: 'സ്പീഷീസ് കാർഡിലെ + ബട്ടൺ അമർത്തി കാർട്ടിലേക്ക് ചേർക്കുക.',
+        kn: 'ಯಾವುದೇ ಪ್ರಭೇದದ ಕಾರ್ಡ್‌ನಲ್ಲಿ + ಬಟನ್ ಒತ್ತುವ ಮೂಲಕ ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ.'
+    },
+    'cart.browse_rates': {
+        en: 'Browse Rates',
+        hi: 'भाव देखें',
+        ml: 'നിരക്കുകൾ കാണുക',
+        kn: 'ದರಗಳನ್ನು ವೀಕ್ಷಿಸಿ'
+    },
+    'cart.watchlist': {
+        en: 'My Watchlist',
+        hi: 'मेरी वॉचलिस्ट',
+        ml: 'എന്റെ വാച്ച്‌ലിസ്റ്റ്',
+        kn: 'ನನ್ನ ವಾಚ್‌ಲಿಸ್ಟ್'
+    },
+    'cart.watchlist_desc': {
+        en: 'Track your favorite species for quick access',
+        hi: 'त्वरित पहुंच के लिए अपनी पसंदीदा प्रजातियों को ट्रैक करें',
+        ml: 'നിങ്ങളുടെ പ്രിയപ്പെട്ട ഇനങ്ങൾ ട്രാക്ക് ചെയ്യുക',
+        kn: 'ತ್ವರಿತ ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಪ್ರಭೇದಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ'
+    },
+    'cart.view_all': {
+        en: 'View All',
+        hi: 'सभी देखें',
+        ml: 'എല്ലാം കാണുക',
+        kn: 'ಎಲ್ಲವನ್ನೂ ವೀಕ್ಷಿಸಿ'
+    },
+    'cart.my_cart': {
+        en: 'My Cart',
+        hi: 'मेरा कार्ट',
+        ml: 'എന്റെ കാർട്ട്',
+        kn: 'ನನ್ನ ಕಾರ್ಟ್'
+    },
+    // --- WEATHER ---
+    'weather.humid': {
+        en: 'Humid',
+        hi: 'उमस',
+        ml: 'ഈർപ്പമുള്ള',
+        kn: 'ತೇವಾಂಶ'
+    },
+    'weather.sunny': {
+        en: 'Sunny',
+        hi: 'धूप',
+        ml: 'വെയിലുള്ള',
+        kn: 'ಬಿಸಿಲು'
+    },
+    'weather.rainy': {
+        en: 'Rainy',
+        hi: 'बारिश',
+        ml: 'മഴയുള്ള',
+        kn: 'ಮಳೆ'
+    },
+    'weather.clear': {
+        en: 'Clear',
+        hi: 'साफ',
+        ml: 'തെളിഞ്ഞ',
+        kn: 'ಸ್ಪಷ್ಟ'
+    },
+    'weather.hot': {
+        en: 'Hot',
+        hi: 'गर्म',
+        ml: 'ചൂടുള്ള',
+        kn: 'ಬಿಸಿ'
+    },
+    // --- SETTINGS ---
+    'settings.verified': {
+        en: 'Verified User',
+        hi: 'सत्यापित उपयोगकर्ता',
+        ml: 'പരിശോധിച്ച ഉപയോക്താവ്',
+        kn: 'ಪರಿಶೀಲಿಸಿದ ಬಳಕೆದಾರ'
+    },
+    'settings.preferences': {
+        en: 'App Preferences',
+        hi: 'ऐप प्राथमिकताएं',
+        ml: 'ആപ്പ് മുൻഗണനകൾ',
+        kn: 'ಅಪ್ಲಿಕೇಶನ್ ಆದ್ಯತೆಗಳು'
+    },
+    'settings.appearance': {
+        en: 'Appearance',
+        hi: 'दिखावट',
+        ml: 'രൂപം',
+        kn: 'ಗೋಚರತೆ'
+    },
+    'settings.light': {
+        en: 'Light Mode',
+        hi: 'लाइट मोड',
+        ml: 'ലൈറ്റ് മോഡ്',
+        kn: 'ಲೈಟ್ ಮೋಡ್'
+    },
+    'settings.dark': {
+        en: 'Dark Mode',
+        hi: 'डार्क मोड',
+        ml: 'ഡാർക്ക് മോഡ്',
+        kn: 'ಡಾರ್ಕ್ ಮೋಡ್'
+    },
+    'settings.system': {
+        en: 'System Default',
+        hi: 'सिस्टम डिफ़ॉल्ट',
+        ml: 'സിസ്റ്റം ഡിഫോൾട്ട്',
+        kn: 'ಸಿಸ್ಟಮ್ ಡೀಫಾಲ್ಟ್'
+    },
+    'settings.whatsapp_alerts': {
+        en: 'WhatsApp Alerts',
+        hi: 'व्हाट्सएप अलर्ट',
+        ml: 'വാട്ട്‌സ്ആപ്പ് അറിയിപ്പുകൾ',
+        kn: 'ವಾಟ್ಸಾಪ್ ಎಚ್ಚರಿಕೆಗಳು'
+    },
+    'settings.daily_updates': {
+        en: 'Daily rate updates',
+        hi: 'दैनिक भाव अपडेट',
+        ml: 'പ്രതിദിന നിരക്ക് അപ്‌ഡേറ്റുകൾ',
+        kn: 'ದೈನಂದಿನ ದರ ನವೀಕರಣಗಳು'
+    },
+    'settings.app_language': {
+        en: 'App Language',
+        hi: 'ऐप की भाषा',
+        ml: 'ആപ്പ് ഭാഷ',
+        kn: 'ಅಪ್ಲಿಕೇಶನ್ ಭಾಷೆ'
+    },
+    'settings.lang_desc': {
+        en: 'English, Hindi, Malayalam...',
+        hi: 'अंग्रेजी, हिंदी, मलयालम...',
+        ml: 'ഇംഗ്ലീഷ്, ഹിന്ദി, മലയാളം...',
+        kn: 'ಇಂಗ್ಲಿಷ್, ಹಿಂದಿ, ಮಲಯಾಳಂ...'
+    },
+    'settings.management': {
+        en: 'Management',
+        hi: 'प्रबंधन',
+        ml: 'മാനേജ്മെന്റ്',
+        kn: 'ನಿರ್ವಹಣೆ'
+    },
+    'settings.admin_panel': {
+        en: 'Admin Panel',
+        hi: 'एडमिन पैनल',
+        ml: 'അഡ്മിൻ പാനൽ',
+        kn: 'ನಿರ್ವಾಹಕ ಫಲಕ'
+    },
+    'settings.admin_desc': {
+        en: 'Manage rates & users',
+        hi: 'भाव और उपयोगकर्ताओं का प्रबंधन करें',
+        ml: 'നിരക്കുകളും ഉപയോക്താക്കളെയും നിയന്ത്രിക്കുക',
+        kn: 'ದರಗಳು ಮತ್ತು ಬಳಕೆದಾರರನ್ನು ನಿರ್ವಹಿಸಿ'
+    },
+    'settings.sign_out': {
+        en: 'Sign Out',
+        hi: 'साइन आउट',
+        ml: 'സൈൻ ഔട്ട്',
+        kn: 'ಸೈನ್ ಔಟ್'
+    },
+    // --- VOICE ASSISTANT ---
+    'voice.listening': {
+        en: 'Listening...',
+        hi: 'सुन रहा हूँ...',
+        ml: 'കേൾക്കുന്നു...',
+        kn: 'ಕೇಳುತ್ತಿದ್ದೇನೆ...'
+    },
+    'voice.tap_to_speak': {
+        en: 'Tap Mic to Speak',
+        hi: 'बोलने के लिए माइक दबाएं',
+        ml: 'സംസാരിക്കാൻ മൈക്ക് ടാപ്പ് ചെയ്യുക',
+        kn: 'ಮಾತನಾಡಲು ಮೈಕ್ ಟ್ಯಾಪ್ ಮಾಡಿ'
+    },
+    'voice.hint': {
+        en: "Say 'Add Seer to Cart'",
+        hi: "कहें 'सीर को कार्ट में जोड़ें'",
+        ml: "'സീർ കാർട്ടിലേക്ക് ചേർക്കുക' എന്ന് പറയുക",
+        kn: "'ಸೀರ್ ಅನ್ನು ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ' ಎಂದು ಹೇಳಿ"
     }
 };
 

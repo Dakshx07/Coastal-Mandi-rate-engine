@@ -128,45 +128,46 @@ export const generate_oracle_summary = (summaries: DailyRateSummary[]): OracleSu
     };
   }
 
-  // --- Sentence 1: Trend Identification ---
-  // Find the species with the largest absolute percentage price change.
-  let biggestMover = summaries[0];
-  let maxAbsDiff = -1;
+  // --- 1. Top Movers Analysis ---
+  const sortedByChange = [...summaries].sort((a, b) => Math.abs(b.change.percentDiff) - Math.abs(a.change.percentDiff));
+  const biggestMover = sortedByChange[0];
 
-  summaries.forEach(s => {
-    if (s.todayRate && s.change.status !== 'SAME') {
-      const absDiff = Math.abs(s.change.percentDiff);
-      if (absDiff > maxAbsDiff) {
-        maxAbsDiff = absDiff;
-        biggestMover = s;
-      }
-    }
-  });
+  let trendText = "🌊 The waters are calm today. Prices are stable across the board.";
 
-  let trendText = "🌊 The Big Wave: Calm waters today. Prices are stable across the board.";
-  if (biggestMover && biggestMover.todayRate && maxAbsDiff > 0) {
+  if (biggestMover && Math.abs(biggestMover.change.percentDiff) > 2) {
     const direction = biggestMover.change.status === 'UP' ? 'surged' : 'dropped';
-    const impact = biggestMover.change.status === 'UP' ? 'Good for sellers!' : 'Great for buyers!';
-    trendText = `🌊 The Big Wave: ${biggestMover.species.name_en} prices ${direction} by ${biggestMover.change.percentDiff}% today. ${impact}`;
+    const impact = biggestMover.change.status === 'UP' ? 'Sellers are making good profit.' : 'Buyers are finding great deals.';
+    trendText = `🌊 Big Wave: ${biggestMover.species.name_en} prices ${direction} by ${biggestMover.change.percentDiff.toFixed(1)}% today. ${impact}`;
   }
 
-  // --- Sentence 2: Actionable Advice ---
+  // --- 2. Actionable Advice (Captain's Call) ---
   let insightText = "⚓ Captain's Call: Hold steady. No major opportunities right now.";
-  if (maxAbsDiff > 10 && biggestMover) {
-    if (biggestMover.change.status === 'UP') {
-      insightText = `⚓ Captain's Call: Sell ${biggestMover.species.name_en} now! Prices are peaking, lock in your profits.`;
-    } else {
-      insightText = `⚓ Captain's Call: Buy ${biggestMover.species.name_en}! It's a bargain at these low rates.`;
-    }
+
+  // Find best buy (biggest drop)
+  const topDrop = summaries.filter(s => s.change.status === 'DOWN').sort((a, b) => b.change.percentDiff - a.change.percentDiff)[0];
+  // Find best sell (biggest gain)
+  const topGain = summaries.filter(s => s.change.status === 'UP').sort((a, b) => b.change.percentDiff - a.change.percentDiff)[0];
+
+  if (topDrop && topDrop.change.percentDiff > 5) {
+    insightText = `⚓ Captain's Call: BUY ${topDrop.species.name_en}! Price is down ${topDrop.change.percentDiff.toFixed(1)}%. Great time to stock up.`;
+  } else if (topGain && topGain.change.percentDiff > 5) {
+    insightText = `⚓ Captain's Call: SELL ${topGain.species.name_en}! Price is up ${topGain.change.percentDiff.toFixed(1)}%. Lock in your profits.`;
   } else {
     const upCount = summaries.filter(s => s.change.status === 'UP').length;
     const downCount = summaries.filter(s => s.change.status === 'DOWN').length;
-    if (upCount > downCount) insightText = "⚓ Captain's Call: It's a seller's market. Look to offload stock.";
-    else if (downCount > upCount) insightText = "⚓ Captain's Call: It's a buyer's market. Stock up for the week.";
+    if (upCount > downCount) insightText = "⚓ Captain's Call: It's a seller's market today. Most prices are trending up.";
+    else if (downCount > upCount) insightText = "⚓ Captain's Call: It's a buyer's market today. Good deals available on many species.";
   }
 
-  // --- Sentence 3: Outlook ---
-  const healthText = "🔮 The Horizon: Expect moderate trading volume tomorrow based on current trends.";
+  // --- 3. Market Outlook (The Horizon) ---
+  let healthText = "🔮 The Horizon: Market volume looks normal.";
+  const volatileCount = summaries.filter(s => Math.abs(s.change.percentDiff) > 5).length;
+
+  if (volatileCount > 3) {
+    healthText = "🔮 The Horizon: High volatility detected. Expect rapid price changes tomorrow.";
+  } else {
+    healthText = "🔮 The Horizon: Prices are stable. Expect steady trading conditions tomorrow.";
+  }
 
   return {
     trend: trendText,

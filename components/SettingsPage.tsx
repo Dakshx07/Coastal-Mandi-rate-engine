@@ -18,7 +18,7 @@ import {
 
 export const SettingsPage: React.FC = () => {
   const { user, logout } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
@@ -42,7 +42,7 @@ export const SettingsPage: React.FC = () => {
           <Link to="/" className="p-2 -ml-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6 text-slate-700 dark:text-slate-200" />
           </Link>
-          <h1 className="ml-2 text-xl font-heading font-bold text-slate-900 dark:text-white">Settings</h1>
+          <h1 className="ml-2 text-xl font-heading font-bold text-slate-900 dark:text-white">{t('settings.title')}</h1>
         </div>
       </div>
 
@@ -64,14 +64,14 @@ export const SettingsPage: React.FC = () => {
             <h2 className="text-xl font-heading font-bold text-slate-900 dark:text-white">{user.name}</h2>
             <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">{user.email}</p>
             <div className="mt-2 inline-flex px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wide">
-              Verified User
+              {t('settings.verified')}
             </div>
           </div>
         </div>
 
         {/* Preferences */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2">App Preferences</h3>
+          <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2">{t('settings.preferences')}</h3>
 
           <div className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-700 shadow-sm">
 
@@ -82,9 +82,9 @@ export const SettingsPage: React.FC = () => {
                   {theme === 'light' ? <Sun className="w-5 h-5" /> : theme === 'dark' ? <Moon className="w-5 h-5" /> : <Monitor className="w-5 h-5" />}
                 </div>
                 <div>
-                  <div className="font-bold text-slate-800 dark:text-white">Appearance</div>
+                  <div className="font-bold text-slate-800 dark:text-white">{t('settings.appearance')}</div>
                   <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    {theme === 'light' ? 'Light Mode' : theme === 'dark' ? 'Dark Mode' : 'System Default'}
+                    {theme === 'light' ? t('settings.light') : theme === 'dark' ? t('settings.dark') : t('settings.system')}
                   </div>
                 </div>
               </div>
@@ -120,8 +120,8 @@ export const SettingsPage: React.FC = () => {
                   <Bell className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-800 dark:text-white">WhatsApp Alerts</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Daily rate updates</div>
+                  <div className="font-bold text-slate-800 dark:text-white">{t('settings.whatsapp_alerts')}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('settings.daily_updates')}</div>
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -137,8 +137,8 @@ export const SettingsPage: React.FC = () => {
                   <Database className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-800 dark:text-white">App Language</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">English, Hindi, Malayalam...</div>
+                  <div className="font-bold text-slate-800 dark:text-white">{t('settings.app_language')}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('settings.lang_desc')}</div>
                 </div>
               </div>
               <select
@@ -157,7 +157,7 @@ export const SettingsPage: React.FC = () => {
 
         {/* Management */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2">Management</h3>
+          <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2">{t('settings.management')}</h3>
 
           <Link to="/admin" className="block bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all active:scale-[0.99] group">
             <div className="flex items-center justify-between">
@@ -166,8 +166,8 @@ export const SettingsPage: React.FC = () => {
                   <Shield className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-800 dark:text-white">Admin Panel</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Manage rates & users</div>
+                  <div className="font-bold text-slate-800 dark:text-white">{t('settings.admin_panel')}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('settings.admin_desc')}</div>
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors" />
@@ -180,7 +180,7 @@ export const SettingsPage: React.FC = () => {
           className="w-full mt-8 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors border border-red-100 dark:border-red-900/30 active:scale-[0.98]"
         >
           <LogOut className="w-5 h-5" />
-          <span>Sign Out</span>
+          <span>{t('settings.sign_out')}</span>
         </button>
 
         <div className="text-center pt-8 pb-4">

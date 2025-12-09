@@ -16,7 +16,7 @@ import { QuickCompare } from './QuickCompare';
 import { CatchCalculator } from './CatchCalculator';
 import { PriceTicker } from './PriceTicker';
 import { SubscriptionModal } from './SubscriptionModal';
-import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera, Clock, ChevronRight, ShoppingCart, Plus, Check, Trash2 } from 'lucide-react';
+import { Settings, RefreshCw, Sparkles, MessageCircle, LogIn, Bell, Home, ArrowLeftRight, LineChart, CloudSun, Wind, Search, MapPin, Calculator, X, Camera, Clock, ChevronRight, ShoppingCart, Plus, Check, Trash2, Send, TrendingUp, TrendingDown, Minus, Filter } from 'lucide-react';
 
 type Tab = 'rates' | 'cart' | 'compare' | 'insights';
 
@@ -262,13 +262,13 @@ export const UserView: React.FC = () => {
             {/* NEW FEATURE: Dynamic Weather Widget */}
             {(() => {
               const weatherMap: Record<string, { temp: string, condition: string, wind: string, icon: any }> = {
-                'h1': { temp: '29°C', condition: 'Humid', wind: '14 km/h', icon: CloudSun },
-                'h2': { temp: '31°C', condition: 'Sunny', wind: '18 km/h', icon: CloudSun },
-                'h3': { temp: '27°C', condition: 'Rainy', wind: '22 km/h', icon: CloudSun }, // You might want a CloudRain icon here if available
-                'h4': { temp: '28°C', condition: 'Clear', wind: '12 km/h', icon: CloudSun },
-                'h5': { temp: '32°C', condition: 'Hot', wind: '10 km/h', icon: CloudSun },
+                'h1': { temp: '29°C', condition: 'humid', wind: '14 km/h', icon: CloudSun },
+                'h2': { temp: '31°C', condition: 'sunny', wind: '18 km/h', icon: CloudSun },
+                'h3': { temp: '27°C', condition: 'rainy', wind: '22 km/h', icon: CloudSun },
+                'h4': { temp: '28°C', condition: 'clear', wind: '12 km/h', icon: CloudSun },
+                'h5': { temp: '32°C', condition: 'hot', wind: '10 km/h', icon: CloudSun },
               };
-              const weather = weatherMap[selectedHarbourId] || { temp: '28°C', condition: 'Sunny', wind: '12 km/h', icon: CloudSun };
+              const weather = weatherMap[selectedHarbourId] || { temp: '28°C', condition: 'sunny', wind: '12 km/h', icon: CloudSun };
               const harbourName = harbours.find(h => h.id === selectedHarbourId)?.name || 'Harbour';
 
               return (
@@ -279,7 +279,7 @@ export const UserView: React.FC = () => {
                       <div className="text-xs font-bold text-blue-100 uppercase tracking-wider mb-1 flex items-center">
                         <MapPin className="w-3 h-3 mr-1" /> {harbourName}
                       </div>
-                      <div className="text-3xl font-heading font-bold">{weather.temp} <span className="text-base font-medium text-blue-100 ml-1">{weather.condition}</span></div>
+                      <div className="text-3xl font-heading font-bold">{weather.temp} <span className="text-base font-medium text-blue-100 ml-1">{t(`weather.${weather.condition}`)}</span></div>
                     </div>
                     <div className="text-right">
                       <weather.icon className="w-10 h-10 text-yellow-300 mb-1 inline-block animate-pulse-soft" />
@@ -387,13 +387,13 @@ export const UserView: React.FC = () => {
                 <div className="flex items-center justify-between mb-2 px-1">
                   <div className="flex items-center">
                     <ShoppingCart className="w-3 h-3 text-emerald-500 mr-1.5" />
-                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">My Cart</h3>
+                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('cart.my_cart')}</h3>
                   </div>
                   <button
                     onClick={() => setActiveTab('cart')}
                     className="text-[10px] text-emerald-500 hover:text-emerald-600 font-bold transition-colors flex items-center gap-0.5"
                   >
-                    View All <ChevronRight className="w-3 h-3" />
+                    {t('cart.view_all')} <ChevronRight className="w-3 h-3" />
                   </button>
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
@@ -502,8 +502,8 @@ export const UserView: React.FC = () => {
               <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                 <ShoppingCart className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
               </div>
-              <h2 className="text-lg font-heading font-bold text-slate-900 dark:text-white">My Watchlist</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Track your favorite species for quick access</p>
+              <h2 className="text-lg font-heading font-bold text-slate-900 dark:text-white">{t('cart.watchlist')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('cart.watchlist_desc')}</p>
             </div>
 
             {cart.length === 0 ? (
@@ -511,21 +511,22 @@ export const UserView: React.FC = () => {
                 <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
                   <ShoppingCart className="w-8 h-8 text-slate-300 dark:text-slate-500" />
                 </div>
-                <h3 className="text-base font-bold text-slate-700 dark:text-slate-200 mb-2">Cart is Empty</h3>
+                <h3 className="text-base font-bold text-slate-700 dark:text-slate-200 mb-2">{t('cart.empty_title')}</h3>
                 <p className="text-sm text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
-                  Add species to your cart by tapping the + button on any species card.
+                  {t('cart.empty_desc')}
                 </p>
                 <button
                   onClick={() => setActiveTab('rates')}
                   className="mt-4 px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-colors"
                 >
-                  Browse Rates
+                  {t('cart.browse_rates')}
                 </button>
               </div>
             ) : (
               <div className="space-y-3">
                 {/* Clear All Button */}
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('cart.title')}</h3>
                   <button
                     onClick={() => {
                       setCart([]);
@@ -534,9 +535,26 @@ export const UserView: React.FC = () => {
                     className="text-xs text-slate-400 hover:text-red-500 font-bold transition-colors flex items-center gap-1"
                   >
                     <Trash2 className="w-3 h-3" />
-                    Clear All
+                    {t('cart.clear')}
                   </button>
                 </div>
+
+                {/* Checkout Button */}
+                <button
+                  onClick={() => {
+                    const items = cart.map(id => {
+                      const s = summaries.find(sum => sum.species.id === id);
+                      return s ? `- ${s.species.name_en} (${s.species.name_local})` : '';
+                    }).filter(Boolean).join('%0A');
+
+                    const text = `Hello, I would like to place an order for:%0A${items}%0A%0APlease confirm availability and today's price.`;
+                    window.open(`https://wa.me/?text=${text}`, '_blank');
+                  }}
+                  className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg mb-4 transition-colors"
+                >
+                  <Send className="w-5 h-5" />
+                  {t('cart.send_whatsapp')}
+                </button>
 
                 {/* Cart Cards */}
                 {cart.map((speciesId, idx) => {
