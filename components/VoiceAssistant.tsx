@@ -46,9 +46,20 @@ export const VoiceAssistant: React.FC = () => {
     const [isActive, setIsActive] = useState(false); // Controls visibility of the bar
     const [transcript, setTranscript] = useState('');
     const [response, setResponse] = useState('');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isSupported, setIsSupported] = useState(true);
     const recognitionRef = useRef<any>(null);
     const silenceTimerRef = useRef<any>(null);
     const startListeningRef = useRef<() => void>(() => { });
+
+    // Check for speech recognition support on mount
+    useEffect(() => {
+        const hasSpeechSupport = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+        setIsSupported(hasSpeechSupport);
+        if (!hasSpeechSupport) {
+            console.warn('Speech Recognition API not supported in this browser');
+        }
+    }, []);
 
     // Data state
     const [allSpecies, setAllSpecies] = useState<Species[]>([]);
@@ -263,28 +274,47 @@ export const VoiceAssistant: React.FC = () => {
     }, [navigate, logout, allSpecies, allRates, handleAddToCart, handlePriceQuery]);
 
     const startListening = useCallback(() => {
+        // Check for Speech Recognition support
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            setErrorMessage('Voice input is not supported on this browser. Please use Chrome or Safari.');
+            setTimeout(() => setErrorMessage(null), 4000);
             return;
         }
 
         // Stop any existing recognition
-        if (recognitionRef.current) recognitionRef.current.stop();
+        if (recognitionRef.current) {
+            try {
+                recognitionRef.current.stop();
+            } catch (e) {
+                console.log('Recognition already stopped');
+            }
+        }
+
+        setErrorMessage(null);
 
         const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = true;
         recognition.lang = 'en-IN';
+        recognition.maxAlternatives = 3; // Better accuracy on mobile
 
         recognition.onstart = () => {
             setIsListening(true);
+            setErrorMessage(null);
             // Clear silence timer
             if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-            // Set a new silence timer to close if no speech for 8 seconds
+            // Set a new silence timer to close if no speech for 10 seconds (more time on mobile)
             silenceTimerRef.current = setTimeout(() => {
                 setIsListening(false);
-                if (recognitionRef.current) recognitionRef.current.stop();
-            }, 8000);
+                if (recognitionRef.current) {
+                    try {
+                        recognitionRef.current.stop();
+                    } catch (e) {
+                        console.log('Stop on silence timeout');
+                    }
+                }
+            }, 10000);
         };
 
         recognition.onresult = (event: any) => {
@@ -292,7 +322,13 @@ export const VoiceAssistant: React.FC = () => {
             if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
             silenceTimerRef.current = setTimeout(() => {
                 setIsListening(false);
-                if (recognitionRef.current) recognitionRef.current.stop();
+                if (recognitionRef.current) {
+                    try {
+                        recognitionRef.current.stop();
+                    } catch (e) {
+                        console.log('Stop on result timeout');
+                    }
+                }
             }, 5000);
 
             let finalTranscript = '';
@@ -317,29 +353,106 @@ export const VoiceAssistant: React.FC = () => {
             }
         };
 
+        recognition.onerror = (event: any) => {
+            console.error('Speech recognition error:', event.error);
+            setIsListening(false);
+
+            // Handle different error types with user-friendly messages
+            switch (event.error) {
+                case 'not-allowed':
+                case 'permission-denied':
+                    setErrorMessage('Microphone access denied. Please allow microphone permission.');
+                    break;
+                case 'no-speech':
+                    setErrorMessage('No speech detected. Tap to try again.');
+                    break;
+                case 'audio-capture':
+                    setErrorMessage('No microphone found. Please check your device.');
+                    break;
+                case 'network':
+                    setErrorMessage('Network error. Please check your connection.');
+                    break;
+                case 'aborted':
+                    // User aborted, no message needed
+                    break;
+                default:
+                    setErrorMessage('Could not hear you. Tap to try again.');
+            }
+
+            // Clear error after 4 seconds
+            setTimeout(() => setErrorMessage(null), 4000);
+        };
+
         recognition.onend = () => {
             setIsListening(false);
+            // Auto-restart if still in active mode and no error (for better mobile experience)
+            if (isActive && !errorMessage && silenceTimerRef.current) {
+                // Don't auto-restart, let user tap again for better mobile UX
+            }
         };
 
         recognitionRef.current = recognition;
-        recognition.start();
-    }, [matchCommand, speak, handlePriceQuery]);
+
+        try {
+            recognition.start();
+        } catch (e) {
+            console.error('Failed to start recognition:', e);
+            setErrorMessage('Failed to start voice input. Tap to try again.');
+            setTimeout(() => setErrorMessage(null), 4000);
+        }
+    }, [matchCommand, speak, handlePriceQuery, isActive, errorMessage]);
 
     const toggleAssistant = () => {
         if (isActive) {
-            if (recognitionRef.current) recognitionRef.current.stop();
+            if (recognitionRef.current) {
+                try {
+                    recognitionRef.current.stop();
+                } catch (e) {
+                    console.log('Recognition stop on toggle');
+                }
+            }
             if (window.speechSynthesis) window.speechSynthesis.cancel();
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
             setIsActive(false);
             setIsListening(false);
+            setErrorMessage(null);
         } else {
+            if (!isSupported) {
+                setErrorMessage('Voice input is not supported on this browser.');
+                setTimeout(() => setErrorMessage(null), 4000);
+                return;
+            }
             setIsActive(true);
+            setTranscript('');
+            setResponse('');
             startListening();
         }
     };
 
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (recognitionRef.current) {
+                try {
+                    recognitionRef.current.stop();
+                } catch (e) {
+                    // Ignore
+                }
+            }
+            if (silenceTimerRef.current) {
+                clearTimeout(silenceTimerRef.current);
+            }
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
+
     // Manual tap to speak in expanded mode
     const handleManualListen = () => {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
+        setErrorMessage(null);
+        setTranscript('');
         startListening();
     };
 
@@ -350,16 +463,23 @@ export const VoiceAssistant: React.FC = () => {
 
     return (
         <>
-            {/* Main Trigger Button - Compact FAB, above bottom nav */}
-            <div className={`fixed bottom-[88px] right-[60px] z-[100] transition-all duration-500 ${isActive ? 'opacity-0 scale-0 pointer-events-none' : 'opacity-100 scale-100'}`}>
+            {/* Main Trigger Button - Compact FAB, stacked above calculator */}
+            <div className={`fixed bottom-[140px] right-4 z-[100] transition-all duration-500 ${isActive ? 'opacity-0 scale-0 pointer-events-none' : 'opacity-100 scale-100'}`}>
                 <button
                     onClick={toggleAssistant}
-                    className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/20 flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95"
+                    className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/30 flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95"
                     aria-label="Voice Assistant"
                 >
                     <Mic className="w-5 h-5" />
                 </button>
             </div>
+
+            {/* Error Toast */}
+            {errorMessage && !isActive && (
+                <div className="fixed bottom-[200px] right-4 z-[101] bg-red-500/90 text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg animate-fade-in max-w-[200px]">
+                    {errorMessage}
+                </div>
+            )}
 
             {/* Dynamic Island / Waveform Bar - Visible when active */}
             <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${isActive ? 'translate-y-0 opacity-100' : 'translate-y-24 opacity-0 pointer-events-none'}`}>
@@ -389,8 +509,8 @@ export const VoiceAssistant: React.FC = () => {
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
                             {isListening ? t('voice.listening') : t('voice.tap_to_speak')}
                         </p>
-                        <p className="text-sm font-medium text-white truncate">
-                            {response || transcript || t('voice.hint')}
+                        <p className={`text-sm font-medium truncate ${errorMessage ? 'text-red-400' : 'text-white'}`}>
+                            {errorMessage || response || transcript || t('voice.hint')}
                         </p>
                     </div>
 
