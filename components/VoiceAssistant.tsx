@@ -350,13 +350,14 @@ export const VoiceAssistant: React.FC = () => {
 
     return (
         <>
-            {/* Main Trigger Button - Always Visible when inactive */}
-            <div className={`fixed bottom-24 right-4 z-[100] transition-all duration-500 ${isActive ? 'opacity-0 scale-0 pointer-events-none' : 'opacity-100 scale-100'}`}>
+            {/* Main Trigger Button - Compact FAB, above bottom nav */}
+            <div className={`fixed bottom-[88px] right-[60px] z-[100] transition-all duration-500 ${isActive ? 'opacity-0 scale-0 pointer-events-none' : 'opacity-100 scale-100'}`}>
                 <button
                     onClick={toggleAssistant}
-                    className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 shadow-xl shadow-blue-500/40 flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95"
+                    className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/20 flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95"
+                    aria-label="Voice Assistant"
                 >
-                    <Mic className="w-6 h-6" />
+                    <Mic className="w-5 h-5" />
                 </button>
             </div>
 

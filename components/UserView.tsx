@@ -751,12 +751,13 @@ export const UserView: React.FC = () => {
         summaries={summaries}
       />
 
-      {/* Floating Calculator Button - positioned above Voice Assistant */}
+      {/* Floating Action Button (FAB) - Compact, minimal */}
       <button
         onClick={() => setIsCalculatorOpen(true)}
-        className="fixed bottom-40 right-4 z-40 bg-emerald-500 text-white p-4 rounded-full shadow-xl shadow-emerald-500/30 hover:scale-110 hover:bg-emerald-400 transition-all active:scale-95 group"
+        className="fixed bottom-[88px] right-3 z-40 bg-emerald-500 text-white w-11 h-11 rounded-full shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
+        aria-label="Open Calculator"
       >
-        <Calculator className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+        <Calculator className="w-5 h-5" />
       </button>
     </div>
   );
